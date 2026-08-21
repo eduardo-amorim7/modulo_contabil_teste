@@ -1,0 +1,15 @@
+html {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body,
+app-root {
+  min-block-size: 100vh;
+  min-block-size: 100dvh;
+}
