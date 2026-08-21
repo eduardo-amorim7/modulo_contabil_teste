@@ -1,0 +1,45 @@
+<mat-sidenav-container class="shell-container">
+  <mat-sidenav
+    class="sidebar"
+    mode="side"
+    [disableClose]="true"
+    [opened]="true"
+    aria-label="Navegação principal"
+  >
+    <nav class="sidebar-nav" aria-label="Módulos do sistema">
+      <a
+        mat-button
+        class="sidebar-entry sidebar-entry--active"
+        routerLink="/"
+        aria-current="page"
+      >
+        <span class="sidebar-entry__content">
+          <span class="material-symbols-outlined sidebar-entry__icon" aria-hidden="true">
+            menu_book
+          </span>
+          <span>Contábil</span>
+        </span>
+      </a>
+    </nav>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="shell-content">
+    <mat-toolbar class="topbar">
+      <div class="page-identity">
+        <h1>Outros Créditos/Débitos</h1>
+
+        <nav class="breadcrumb" aria-label="Caminho de navegação">
+          <a routerLink="/">Início</a>
+          <span class="breadcrumb__separator" aria-hidden="true">›</span>
+          <span aria-current="page">Outros Créditos/Débitos</span>
+        </nav>
+      </div>
+    </mat-toolbar>
+
+    <main class="page-background">
+      <section class="content-surface" aria-label="Área principal">
+        <router-outlet />
+      </section>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

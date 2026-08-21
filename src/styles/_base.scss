@@ -13,3 +13,11 @@ app-root {
   min-block-size: 100vh;
   min-block-size: 100dvh;
 }
+
+body {
+  font-family: var(--font-family-base);
+}
+
+.select-field .mat-mdc-select-value {
+  transform: translateY(-2px);
+}

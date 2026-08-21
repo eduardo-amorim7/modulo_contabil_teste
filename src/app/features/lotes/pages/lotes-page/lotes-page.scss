@@ -1,0 +1,18 @@
+:host {
+  display: block;
+}
+
+.lotes-page {
+  min-block-size: 100%;
+  padding: clamp(2rem, 3.2vw, 3.75rem) clamp(1.25rem, 3.6vw, 4.25rem);
+}
+
+app-lote-actions {
+  margin-block-start: 0.875rem;
+}
+
+@media (max-width: 40rem) {
+  .lotes-page {
+    padding: 1rem 0.75rem;
+  }
+}

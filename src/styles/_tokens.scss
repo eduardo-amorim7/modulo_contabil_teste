@@ -4,17 +4,21 @@ $breakpoint-small: 40rem;
   color-scheme: light;
 
   // Colors
-  --color-background: #ffffff;
+  --color-background: #f1f3f6;
   --color-surface: #ffffff;
-  --color-text: #1f2937;
-  --color-text-muted: #6b7280;
-  --color-border: #d1d5db;
-  --color-primary: #2563eb;
+  --color-surface-subtle: #f7f9fa;
+  --color-text: #10242c;
+  --color-text-muted: #5d6a70;
+  --color-border: #cdd3d7;
+  --color-primary: #008b89;
+  --color-primary-dark: #00434b;
+  --color-primary-soft: #e9fbfb;
   --color-danger: #b91c1c;
 
   // Typography
   --font-family-base:
-    Inter, ui-sans-serif, system-ui, -apple-system, blinkmacsystemfont, 'Segoe UI', sans-serif;
+    'Asap', Arial, ui-sans-serif, system-ui, -apple-system, blinkmacsystemfont, 'Segoe UI',
+    sans-serif;
   --font-size-base: 1rem;
   --line-height-base: 1.5;
 
@@ -30,15 +34,19 @@ $breakpoint-small: 40rem;
   // Shape and elevation
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 8%);
+  --radius-lg: 0.875rem;
+  --shadow-sm: 0 1px 3px rgb(15 31 39 / 10%);
+  --shadow-shell: 0 2px 8px rgb(30 45 53 / 14%);
 
   // Layout
-  --layout-content-max-width: 75rem;
-  --layout-page-padding: var(--space-8);
+  --layout-sidebar-width: 5rem;
+  --layout-header-height: 4.375rem;
+  --layout-page-padding: 0.875rem;
 }
 
 @media (max-width: $breakpoint-small) {
   :root {
-    --layout-page-padding: var(--space-4);
+    --layout-sidebar-width: 4.5rem;
+    --layout-page-padding: var(--space-2);
   }
 }

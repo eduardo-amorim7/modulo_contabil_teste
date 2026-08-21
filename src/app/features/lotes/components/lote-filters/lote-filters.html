@@ -1,0 +1,169 @@
+<section class="filters-card" aria-labelledby="filters-title">
+  <header class="filters-card__header">
+    <div>
+      <h2 id="filters-title">Filtros</h2>
+      <p>PESQUISAR LOTE OUTROS CRÉDITOS/DÉBITOS</p>
+    </div>
+
+    <button
+      class="collapse-button"
+      type="button"
+      [attr.aria-expanded]="expanded()"
+      [attr.aria-label]="expanded() ? 'Recolher filtros' : 'Expandir filtros'"
+      (click)="toggleExpanded()"
+    >
+      <span class="material-symbols-outlined" aria-hidden="true">
+        {{ expanded() ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+      </span>
+    </button>
+  </header>
+
+  @if (expanded()) {
+    <form class="filters-form" [formGroup]="form" (ngSubmit)="submit()">
+      <div class="filters-grid">
+        <div class="identity-filters">
+          <div class="field-group">
+            <label for="instituicaoResponsavel">Instituição Resp.</label>
+            <mat-form-field class="compact-field" appearance="outline" subscriptSizing="dynamic">
+              <input
+                id="instituicaoResponsavel"
+                matInput
+                type="text"
+                formControlName="instituicaoResponsavel"
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="field-group">
+            <label for="instituicao">Instituição</label>
+            <mat-form-field class="compact-field" appearance="outline" subscriptSizing="dynamic">
+              <input id="instituicao" matInput type="text" formControlName="instituicao" />
+            </mat-form-field>
+          </div>
+
+          <div class="field-group">
+            <label for="situacao">Situação Lote</label>
+            <mat-form-field
+              class="compact-field select-field"
+              appearance="outline"
+              subscriptSizing="dynamic"
+            >
+              <mat-select id="situacao" formControlName="situacao">
+                @for (situacao of situacoes; track situacao) {
+                  <mat-option [value]="situacao">{{ situacao }}</mat-option>
+                }
+              </mat-select>
+              <span
+                matIconSuffix
+                class="material-symbols-outlined select-field__arrow"
+                aria-hidden="true"
+              >
+                keyboard_arrow_down
+              </span>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="range-filters">
+          <div class="range-row">
+            <span class="range-row__title">ID Lote</span>
+
+            <div class="range-field">
+              <label for="idLoteDe">De</label>
+              <mat-form-field class="compact-field" appearance="outline" subscriptSizing="dynamic">
+                <input id="idLoteDe" matInput type="number" min="0" formControlName="idLoteDe" />
+              </mat-form-field>
+            </div>
+
+            <div class="range-field">
+              <label for="idLoteAte">Até</label>
+              <mat-form-field class="compact-field" appearance="outline" subscriptSizing="dynamic">
+                <input id="idLoteAte" matInput type="number" min="0" formControlName="idLoteAte" />
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="range-row">
+            <span class="range-row__title">Valor Lote</span>
+
+            <div class="range-field">
+              <label for="valorLoteDe">De</label>
+              <mat-form-field class="compact-field" appearance="outline" subscriptSizing="dynamic">
+                <input
+                  id="valorLoteDe"
+                  matInput
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  formControlName="valorLoteDe"
+                />
+              </mat-form-field>
+            </div>
+
+            <div class="range-field">
+              <label for="valorLoteAte">Até</label>
+              <mat-form-field class="compact-field" appearance="outline" subscriptSizing="dynamic">
+                <input
+                  id="valorLoteAte"
+                  matInput
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  formControlName="valorLoteAte"
+                />
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="range-row range-row--date">
+            <span class="range-row__title">Data Entrada</span>
+
+            <div class="range-field">
+              <label for="dataEntradaDe">De</label>
+              <mat-form-field class="compact-field" appearance="outline" subscriptSizing="dynamic">
+                <input
+                  id="dataEntradaDe"
+                  matInput
+                  formControlName="dataEntradaDe"
+                  [matDatepicker]="dataEntradaDePicker"
+                />
+                <mat-datepicker-toggle
+                  matIconSuffix
+                  [for]="dataEntradaDePicker"
+                  aria-label="Abrir calendário da data inicial"
+                />
+                <mat-datepicker #dataEntradaDePicker />
+              </mat-form-field>
+            </div>
+
+            <div class="range-field">
+              <label for="dataEntradaAte">Até</label>
+              <mat-form-field class="compact-field" appearance="outline" subscriptSizing="dynamic">
+                <input
+                  id="dataEntradaAte"
+                  matInput
+                  formControlName="dataEntradaAte"
+                  [matDatepicker]="dataEntradaAtePicker"
+                />
+                <mat-datepicker-toggle
+                  matIconSuffix
+                  [for]="dataEntradaAtePicker"
+                  aria-label="Abrir calendário da data final"
+                />
+                <mat-datepicker #dataEntradaAtePicker />
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      @if (form.invalid && form.touched) {
+        <p class="range-error" role="alert">O valor inicial não pode ser maior que o final.</p>
+      }
+
+      <div class="filters-actions">
+        <button mat-flat-button class="search-button" type="submit">Pesquisar</button>
+      </div>
+    </form>
+  }
+</section>
