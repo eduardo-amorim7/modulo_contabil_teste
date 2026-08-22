@@ -55,6 +55,11 @@ body:has(.modal-backdrop) {
   overscroll-behavior: none;
 }
 
+.shell-content:has(.dialog-backdrop),
+.shell-content:has(.modal-backdrop) {
+  z-index: 3;
+}
+
 .smooth-collapse {
   display: grid;
   grid-template-rows: 1fr;

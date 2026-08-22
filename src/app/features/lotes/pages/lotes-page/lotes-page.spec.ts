@@ -221,6 +221,23 @@ describe('LotesPage', () => {
     }
   });
 
+  it('should explain that a confirmed lot cannot return to sent', () => {
+    const fixture = TestBed.createComponent(LotesPage);
+    service.send.and.returnValue({ updatedCount: 0, invalidIds: [5] });
+    const component = fixture.componentInstance;
+    component.updateSelection(new Set([5]));
+
+    component.sendSelected();
+
+    expect(component.actionFeedback()).toEqual({
+      message:
+        'Não foi possível enviar: o lote 5 não está em uma situação permitida para essa ação.',
+      tone: 'error',
+    });
+
+    fixture.destroy();
+  });
+
   it('should open the justification dialog with every selected lot', () => {
     const fixture = TestBed.createComponent(LotesPage);
     const component = fixture.componentInstance;
@@ -232,19 +249,24 @@ describe('LotesPage', () => {
     expect(component.dialogLotes().map((lote) => lote.idLote)).toEqual([3, 6]);
   });
 
-  it('should require confirmation before deleting multiple selected lots', () => {
-    service.delete.and.returnValue(2);
+  it('should require exactly one selected lot and confirmation before deleting', () => {
+    service.delete.and.returnValue(1);
     const fixture = TestBed.createComponent(LotesPage);
     const component = fixture.componentInstance;
     component.updateSelection(new Set([3, 6]));
 
     component.requestDeletion();
     expect(service.delete).not.toHaveBeenCalled();
+    expect(component.activeDialog()).toBeNull();
+
+    component.updateSelection(new Set([3]));
+    component.requestDeletion();
+    expect(service.delete).not.toHaveBeenCalled();
     expect(component.activeDialog()).toBe('exclusao');
 
     component.confirmDeletion();
 
-    expect(service.delete).toHaveBeenCalledOnceWith(new Set([3, 6]));
+    expect(service.delete).toHaveBeenCalledOnceWith(new Set([3]));
     expect(component.activeDialog()).toBeNull();
     expect(component.selectedIds().size).toBe(0);
   });

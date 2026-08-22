@@ -37,13 +37,31 @@ describe('LoteFiltersComponent', () => {
     expect(selectArrow?.textContent?.trim()).toBe('');
   });
 
-  it('should provide the datepicker help labels in Brazilian Portuguese', () => {
+  it('should show the datepicker help labels in Brazilian Portuguese', () => {
     const datepickerIntl = TestBed.inject(MatDatepickerIntl);
 
     expect(datepickerIntl.openCalendarLabel).toBe('Abrir calendário');
     expect(datepickerIntl.prevMonthLabel).toBe('Mês anterior');
     expect(datepickerIntl.nextMonthLabel).toBe('Próximo mês');
     expect(datepickerIntl.switchToMultiYearViewLabel).toBe('Escolher mês e ano');
+
+    const fixture = TestBed.createComponent(LoteFiltersComponent);
+    fixture.detectChanges();
+
+    const calendarToggle = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(
+      'mat-datepicker-toggle button',
+    );
+
+    calendarToggle?.click();
+    fixture.detectChanges();
+
+    const previousMonthButton = document.querySelector<HTMLButtonElement>(
+      '.mat-calendar-previous-button',
+    );
+    const nextMonthButton = document.querySelector<HTMLButtonElement>('.mat-calendar-next-button');
+
+    expect(previousMonthButton?.getAttribute('aria-label')).toBe('Mês anterior');
+    expect(nextMonthButton?.getAttribute('aria-label')).toBe('Próximo mês');
   });
 
   it('should reject an inverted lot id range', () => {

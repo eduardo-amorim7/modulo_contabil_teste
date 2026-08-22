@@ -9,11 +9,20 @@ import { LancamentoLote, Lote, LoteSearchResult } from '../models/lote.model';
 
 const MOCK_LATENCY_MS = 650;
 export const LOTE_SEARCH_ERROR_MESSAGE = 'Não foi possível consultar os lotes. Tente novamente.';
+export const LOTE_TOTAL_LIMIT_ERROR_MESSAGE =
+  'O valor total do lote excede o limite monetário permitido.';
 
 export class LoteSearchError extends Error {
   constructor() {
     super(LOTE_SEARCH_ERROR_MESSAGE);
     this.name = 'LoteSearchError';
+  }
+}
+
+export class LoteTotalLimitError extends RangeError {
+  constructor() {
+    super(LOTE_TOTAL_LIMIT_ERROR_MESSAGE);
+    this.name = 'LoteTotalLimitError';
   }
 }
 
@@ -137,7 +146,7 @@ export class LotesService {
   }
 
   approve(ids: ReadonlySet<number>, approvalUser: string, now = new Date()): LoteBatchActionResult {
-    return this.updateLots(ids, 'Confirmado', (lote) => ({
+    return this.updateLots(ids, ['Confirmado'], (lote) => ({
       ...lote,
       usuarioAprovacao: approvalUser,
       situacaoLote: 'Confirmado',
@@ -146,7 +155,7 @@ export class LotesService {
   }
 
   send(ids: ReadonlySet<number>, now = new Date()): LoteBatchActionResult {
-    return this.updateLots(ids, 'Enviado', (lote) => ({
+    return this.updateLots(ids, ['Enviado', 'Confirmado'], (lote) => ({
       ...lote,
       situacaoLote: 'Enviado',
       dataHoraSituacaoLote: this.formatDateTime(now),
@@ -244,15 +253,17 @@ export class LotesService {
 
   private updateLots(
     ids: ReadonlySet<number>,
-    invalidSituation: string,
+    invalidSituations: readonly string[],
     update: (lote: Lote) => Lote,
   ): LoteBatchActionResult {
-    const normalizedInvalidSituation = this.normalizeText(invalidSituation);
+    const normalizedInvalidSituations = new Set(
+      invalidSituations.map((situation) => this.normalizeText(situation)),
+    );
     const invalidIds = this.allLotes()
       .filter(
         (lote) =>
           ids.has(lote.idLote) &&
-          this.normalizeText(lote.situacaoLote) === normalizedInvalidSituation,
+          normalizedInvalidSituations.has(this.normalizeText(lote.situacaoLote)),
       )
       .map((lote) => lote.idLote);
 
@@ -290,9 +301,23 @@ export class LotesService {
   }
 
   private calculateTotal(lancamentos: readonly LancamentoLote[]): number {
-    const total = lancamentos.reduce((sum, lancamento) => sum + lancamento.valor, 0);
+    let totalCents = 0;
 
-    return Math.round((total + Number.EPSILON) * 100) / 100;
+    for (const lancamento of lancamentos) {
+      const valueCents = Math.round(lancamento.valor * 100);
+
+      if (
+        !Number.isSafeInteger(valueCents) ||
+        valueCents < 0 ||
+        totalCents > Number.MAX_SAFE_INTEGER - valueCents
+      ) {
+        throw new LoteTotalLimitError();
+      }
+
+      totalCents += valueCents;
+    }
+
+    return totalCents / 100;
   }
 
   private formatDateTime(date: Date): string {

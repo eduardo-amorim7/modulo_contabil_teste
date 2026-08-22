@@ -3,7 +3,8 @@ import { firstValueFrom } from 'rxjs';
 
 import { INITIAL_LOTE_FILTERS } from '../models/lote-filters.model';
 import { LoteSearchResult } from '../models/lote.model';
-import { LotesService } from './lotes.service';
+import { MAX_SAFE_CURRENCY_VALUE } from '../../../shared/validators/input-value.validators';
+import { LOTE_TOTAL_LIMIT_ERROR_MESSAGE, LoteTotalLimitError, LotesService } from './lotes.service';
 
 describe('LotesService', () => {
   let service: LotesService;
@@ -157,6 +158,24 @@ describe('LotesService', () => {
     expect(service.findLancamentosByLoteId(3)).toEqual([]);
   });
 
+  it('should reject a lot whose aggregate amount cannot preserve cent precision', () => {
+    const sourceEntry = service.findLancamentosByLoteId(3)[0];
+    const createLot = () =>
+      service.create({
+        numeroLoteCco: 'CCO-LIMITE-MONETARIO',
+        instituicao: '0002 - SICOOB CENTRAL',
+        eventoAnexoPorLote: false,
+        lancamentos: [
+          { ...sourceEntry, valor: MAX_SAFE_CURRENCY_VALUE },
+          { ...sourceEntry, idLancamento: 0, valor: MAX_SAFE_CURRENCY_VALUE },
+        ],
+        usuarioRegistro: 'usuario.logado',
+      });
+
+    expect(createLot).toThrowError(LoteTotalLimitError, LOTE_TOTAL_LIMIT_ERROR_MESSAGE);
+    expect(service.findById(23)).toBeNull();
+  });
+
   it('should approve multiple lots and record the approval user and timestamp', () => {
     const result = service.approve(
       new Set([3, 6]),
@@ -176,15 +195,14 @@ describe('LotesService', () => {
     expect(service.findById(7)?.situacaoLote).toBe('Aberto');
   });
 
-  it('should send multiple lots without removing an existing approval user', () => {
-    const existingApprovalUser = service.findById(5)?.usuarioAprovacao;
-    const result = service.send(new Set([3, 5]), new Date(2026, 7, 22, 12, 30, 45));
+  it('should send multiple open lots', () => {
+    const result = service.send(new Set([3, 6]), new Date(2026, 7, 22, 12, 30, 45));
 
     expect(result).toEqual({ updatedCount: 2, invalidIds: [] });
     expect(service.findById(3)?.situacaoLote).toBe('Enviado');
-    expect(service.findById(5)).toEqual(
+    expect(service.findById(6)).toEqual(
       jasmine.objectContaining({
-        usuarioAprovacao: existingApprovalUser,
+        usuarioAprovacao: null,
         situacaoLote: 'Enviado',
         dataHoraSituacaoLote: '22/08/2026 12:30:45',
       }),
@@ -204,6 +222,19 @@ describe('LotesService', () => {
 
     expect(result).toEqual({ updatedCount: 0, invalidIds: [4] });
     expect(service.findById(3)?.situacaoLote).toBe('Aberto');
+  });
+
+  it('should reject the entire sending batch when a selected lot is confirmed', () => {
+    const result = service.send(new Set([3, 5]));
+
+    expect(result).toEqual({ updatedCount: 0, invalidIds: [5] });
+    expect(service.findById(3)?.situacaoLote).toBe('Aberto');
+    expect(service.findById(5)).toEqual(
+      jasmine.objectContaining({
+        usuarioAprovacao: 'renata.alves',
+        situacaoLote: 'Confirmado',
+      }),
+    );
   });
 
   it('should delete multiple lots only from the current in-memory mock', async () => {

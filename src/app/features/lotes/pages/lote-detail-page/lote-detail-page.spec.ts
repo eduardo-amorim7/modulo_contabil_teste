@@ -1,7 +1,10 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router';
 
-import { LotesService } from '../../services/lotes.service';
+import { MAX_SAFE_CURRENCY_VALUE } from '../../../../shared/validators/input-value.validators';
+import { LancamentoModalComponent } from '../../components/lancamento-modal/lancamento-modal';
+import { LOTE_TOTAL_LIMIT_ERROR_MESSAGE, LotesService } from '../../services/lotes.service';
 import { LoteDetailPage } from './lote-detail-page';
 
 describe('LoteDetailPage', () => {
@@ -26,6 +29,23 @@ describe('LoteDetailPage', () => {
     fixture.detectChanges();
 
     return fixture;
+  }
+
+  function getModal(fixture: ComponentFixture<LoteDetailPage>): LancamentoModalComponent {
+    const modal = fixture.debugElement.query(By.directive(LancamentoModalComponent));
+
+    if (!modal) {
+      throw new Error('O modal de lançamento não foi renderizado.');
+    }
+
+    return modal.componentInstance as LancamentoModalComponent;
+  }
+
+  function openCreateModal(fixture: ComponentFixture<LoteDetailPage>): LancamentoModalComponent {
+    fixture.componentInstance.openCreateModal();
+    fixture.detectChanges();
+
+    return getModal(fixture);
   }
 
   it('should render the selected lot and every requested entry column', async () => {
@@ -140,6 +160,29 @@ describe('LoteDetailPage', () => {
     expect(compiled.textContent).toContain('Informe a instituição com até 100 caracteres.');
     expect(compiled.querySelectorAll('.detail-field-error').length).toBe(2);
     expect(component.saving()).toBeFalse();
+  });
+
+  it('should show a controlled error when the lot total exceeds the safe monetary limit', async () => {
+    const fixture = await createComponent(0, 'incluir');
+    const component = fixture.componentInstance;
+    const service = TestBed.inject(LotesService);
+    const sourceEntry = service.findLancamentosByLoteId(3)[0];
+    component.loteForm.controls.numeroLoteCco.setValue('CCO-LIMITE-MONETARIO');
+    component.loteForm.controls.instituicao.setValue('0002 - SICOOB CENTRAL');
+    component.lancamentos.set([
+      { ...sourceEntry, idLote: 0, idLancamento: 1, valor: MAX_SAFE_CURRENCY_VALUE },
+      { ...sourceEntry, idLote: 0, idLancamento: 2, valor: MAX_SAFE_CURRENCY_VALUE },
+    ]);
+
+    component.saveLote();
+    fixture.detectChanges();
+
+    const feedback = (fixture.nativeElement as HTMLElement).querySelector('.lote-feedback');
+    expect(component.saving()).toBeFalse();
+    expect(component.loteFeedback()).toBe(LOTE_TOTAL_LIMIT_ERROR_MESSAGE);
+    expect(feedback?.getAttribute('role')).toBe('alert');
+    expect(feedback?.classList).toContain('lote-feedback--error');
+    expect(service.findById(23)).toBeNull();
   });
 
   it('should select entries exclusively through the same checkbox behavior as the main grid', async () => {
@@ -290,17 +333,39 @@ describe('LoteDetailPage', () => {
     ).toEqual([3001]);
   });
 
+  it('should disable actions and protect a selected entry hidden by the filter', async () => {
+    const fixture = await createComponent(3, 'alterar');
+    const component = fixture.componentInstance;
+    const initialLancamentos = component.lancamentos();
+    component.selectedLancamentoIds.set(new Set([3001]));
+    component.filtro.setValue('sem resultado');
+    fixture.detectChanges();
+
+    const restrictedActions = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>(
+        '.launch-action-button',
+      ),
+    ).filter((button) => button.textContent?.trim() !== 'Incluir');
+
+    expect(component.selectedLancamentoId()).toBe(3001);
+    expect(component.visibleSelectedLancamentoId()).toBeNull();
+    expect(restrictedActions.every((button) => button.disabled)).toBeTrue();
+
+    component.deleteSelectedLancamento();
+    expect(component.lancamentos()).toEqual(initialLancamentos);
+  });
+
   it('should persist a valid entry and recalculate the lot total when saving', async () => {
     const fixture = await createComponent(3, 'alterar');
     const component = fixture.componentInstance;
     const service = TestBed.inject(LotesService);
     const initialCount = component.lancamentos().length;
 
-    component.openCreateModal();
-    component.lancamentoForm.controls.contaCorrente.setValue('44444');
-    component.onContaInput();
-    component.searchContaCorrente();
-    component.lancamentoForm.patchValue({
+    const modalComponent = openCreateModal(fixture);
+    modalComponent.lancamentoForm.controls.contaCorrente.setValue('44444');
+    modalComponent.onContaInput();
+    modalComponent.searchContaCorrente();
+    modalComponent.lancamentoForm.patchValue({
       valor: 125.9,
       historico: 'Lançamento Manual',
       documento: 'DOC-TESTE-001',
@@ -308,13 +373,13 @@ describe('LoteDetailPage', () => {
       pa: 'Cooperativa',
       complementoHistorico: 'Complemento incluído pelo teste',
     });
-    component.selectEvento(102);
-    component.confirmEventoSelection();
+    modalComponent.selectEvento(102);
+    modalComponent.confirmEventoSelection();
 
-    expect(component.lancamentoForm.valid).toBeTrue();
-    expect(component.titularConta()).toBe('Cooperativa Central');
+    expect(modalComponent.lancamentoForm.valid).toBeTrue();
+    expect(modalComponent.titularConta()).toBe('Cooperativa Central');
 
-    component.submitLancamento();
+    modalComponent.submitLancamento();
     fixture.detectChanges();
 
     expect(component.lancamentos().length).toBe(initialCount + 1);
@@ -340,10 +405,10 @@ describe('LoteDetailPage', () => {
     const fixture = await createComponent(3, 'alterar');
     const component = fixture.componentInstance;
 
-    component.openCreateModal();
-    component.lancamentoForm.controls.contaCorrente.setValue('44444');
-    component.onContaInput();
-    component.searchContaCorrente();
+    const modalComponent = openCreateModal(fixture);
+    modalComponent.lancamentoForm.controls.contaCorrente.setValue('44444');
+    modalComponent.onContaInput();
+    modalComponent.searchContaCorrente();
     fixture.detectChanges();
 
     const holder = (fixture.nativeElement as HTMLElement).querySelector<HTMLElement>(
@@ -358,7 +423,7 @@ describe('LoteDetailPage', () => {
     const fixture = await createComponent(3, 'alterar');
     const component = fixture.componentInstance;
 
-    component.openCreateModal();
+    const modalComponent = openCreateModal(fixture);
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
@@ -380,7 +445,7 @@ describe('LoteDetailPage', () => {
     const fixture = await createComponent(3, 'alterar');
     const component = fixture.componentInstance;
 
-    component.openCreateModal();
+    const modalComponent = openCreateModal(fixture);
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
@@ -400,7 +465,7 @@ describe('LoteDetailPage', () => {
     const fixture = await createComponent(3, 'alterar');
     const component = fixture.componentInstance;
 
-    component.openCreateModal();
+    const modalComponent = openCreateModal(fixture);
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
@@ -408,10 +473,10 @@ describe('LoteDetailPage', () => {
     const statusDocumento = compiled.querySelector<HTMLInputElement>('#situacao-documento-csc');
     const documento = compiled.querySelector<HTMLInputElement>('#documento-lancamento');
 
-    expect(component.lancamentoForm.controls.idEvento.value).toBe('');
-    expect(component.eventoSelecionado()).toBeNull();
-    expect(component.lancamentoForm.controls.contaCorrente.hasError('required')).toBeFalse();
-    expect(component.lancamentoForm.controls.pa.hasError('required')).toBeFalse();
+    expect(modalComponent.lancamentoForm.controls.idEvento.value).toBe('');
+    expect(modalComponent.eventoSelecionado()).toBeNull();
+    expect(modalComponent.lancamentoForm.controls.contaCorrente.hasError('required')).toBeFalse();
+    expect(modalComponent.lancamentoForm.controls.pa.hasError('required')).toBeFalse();
     expect(statusLancamento?.readOnly).toBeTrue();
     expect(statusLancamento?.value).toBe('Pendente');
     expect(statusDocumento?.readOnly).toBeTrue();
@@ -427,52 +492,91 @@ describe('LoteDetailPage', () => {
     const fixture = await createComponent(3, 'alterar');
     const component = fixture.componentInstance;
 
-    component.openCreateModal();
-    component.lancamentoForm.patchValue({
+    const modalComponent = openCreateModal(fixture);
+    modalComponent.lancamentoForm.patchValue({
       valor: 75,
       historico: 'Lançamento Manual',
       documento: 'DOC-SEM-CONTA',
       complementoHistorico: 'Lançamento sem conta informada',
     });
-    component.selectEvento(102);
-    component.confirmEventoSelection();
+    modalComponent.selectEvento(102);
+    modalComponent.confirmEventoSelection();
 
-    expect(component.lancamentoForm.valid).toBeTrue();
-    component.submitLancamento();
+    expect(modalComponent.lancamentoForm.valid).toBeTrue();
+    modalComponent.submitLancamento();
 
     expect(component.modalAberto()).toBeFalse();
     expect(component.lancamentos().at(-1)?.contaCorrente).toBe('');
     expect(component.lancamentos().at(-1)?.titularConta).toBe('');
   });
 
+  it('should preserve alteration and duplication behavior through the modal contract', async () => {
+    const fixture = await createComponent(3, 'alterar');
+    const component = fixture.componentInstance;
+    const initialCount = component.lancamentos().length;
+    component.selectedLancamentoIds.set(new Set([3001]));
+
+    component.openSelectedLancamento('alterar');
+    fixture.detectChanges();
+    let modalComponent = getModal(fixture);
+    modalComponent.lancamentoForm.controls.documento.setValue('DOC-ALTERADO');
+    modalComponent.submitLancamento();
+    fixture.detectChanges();
+
+    expect(component.lancamentos().length).toBe(initialCount);
+    expect(component.lancamentos()[0].documento).toBe('DOC-ALTERADO');
+    expect(component.modalAberto()).toBeFalse();
+
+    component.openSelectedLancamento('duplicar');
+    fixture.detectChanges();
+    modalComponent = getModal(fixture);
+
+    expect(modalComponent.lancamentoForm.controls.documento.value).toBe('DOC-ALTERADO - CÓPIA');
+    modalComponent.submitLancamento();
+
+    expect(component.lancamentos().length).toBe(initialCount + 1);
+    expect(component.lancamentos().at(-1)).toEqual(
+      jasmine.objectContaining({
+        idLancamento: 3002,
+        documento: 'DOC-ALTERADO - CÓPIA',
+        situacao: 'Pendente',
+      }),
+    );
+    expect(component.modalAberto()).toBeFalse();
+  });
+
   it('should search and select a CCO event from the reference dialog', async () => {
     const fixture = await createComponent(3, 'alterar');
     const component = fixture.componentInstance;
 
-    component.openCreateModal();
-    component.openEventoModal();
-    component.eventoBuscaCampo.setValue('descricao');
-    component.eventoBuscaValor.setValue('débito');
+    const modalComponent = openCreateModal(fixture);
+    modalComponent.openEventoModal();
+    modalComponent.eventoBuscaCampo.setValue('descricao');
+    modalComponent.eventoBuscaValor.setValue('débito');
     fixture.detectChanges();
 
-    expect(component.eventoModalAberto()).toBeTrue();
-    expect(component.filteredEventos().map((evento) => evento.idEvento)).toEqual([102, 108, 117]);
+    expect(modalComponent.eventoModalAberto()).toBeTrue();
+    expect(modalComponent.filteredEventos().map((evento) => evento.idEvento)).toEqual([
+      102, 108, 117,
+    ]);
 
     jasmine.clock().install();
     try {
-      component.listarEventos();
+      modalComponent.listarEventos();
       fixture.detectChanges();
 
       const listButton = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(
         '.event-list-button',
       );
 
-      expect(component.eventoBuscando()).toBeTrue();
+      expect(modalComponent.eventoBuscando()).toBeTrue();
       expect(listButton?.disabled).toBeTrue();
       expect(listButton?.getAttribute('aria-busy')).toBe('true');
       expect(listButton?.querySelector('.event-list-button__spinner')).not.toBeNull();
       expect(listButton?.textContent?.trim()).toBe('Listando...');
-      expect(component.filteredEventos().map((evento) => evento.idEvento)).toEqual([102, 108, 117]);
+      expect(modalComponent.filteredEventos().map((evento) => evento.idEvento)).toEqual([
+        102, 108, 117,
+      ]);
 
       jasmine.clock().tick(650);
       fixture.detectChanges();
@@ -480,23 +584,23 @@ describe('LoteDetailPage', () => {
       jasmine.clock().uninstall();
     }
 
-    expect(component.eventoBuscando()).toBeFalse();
-    expect(component.filteredEventos().map((evento) => evento.idEvento)).toEqual([108]);
+    expect(modalComponent.eventoBuscando()).toBeFalse();
+    expect(modalComponent.filteredEventos().map((evento) => evento.idEvento)).toEqual([108]);
 
-    component.selectEvento(108);
-    component.confirmEventoSelection();
+    modalComponent.selectEvento(108);
+    modalComponent.confirmEventoSelection();
 
-    expect(component.eventoSelecionado()?.idEvento).toBe(108);
-    expect(component.lancamentoForm.controls.idEvento.value).toBe('108');
-    expect(component.eventoModalAberto()).toBeFalse();
+    expect(modalComponent.eventoSelecionado()?.idEvento).toBe(108);
+    expect(modalComponent.lancamentoForm.controls.idEvento.value).toBe('108');
+    expect(modalComponent.eventoModalAberto()).toBeFalse();
   });
 
   it('should render the event search dialog with its reference action hierarchy', async () => {
     const fixture = await createComponent(3, 'alterar');
     const component = fixture.componentInstance;
 
-    component.openCreateModal();
-    component.openEventoModal();
+    const modalComponent = openCreateModal(fixture);
+    modalComponent.openEventoModal();
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
@@ -509,7 +613,7 @@ describe('LoteDetailPage', () => {
     expect(compiled.querySelector('.event-close-button')?.textContent?.trim()).toBe('Fechar');
     expect(compiled.querySelectorAll('.event-pagination-button').length).toBe(2);
 
-    component.selectEvento(102);
+    modalComponent.selectEvento(102);
     fixture.detectChanges();
 
     expect(confirmButton?.disabled).toBeFalse();
@@ -528,12 +632,12 @@ describe('LoteDetailPage', () => {
       type: 'application/pdf',
     } as File;
 
-    component.openCreateModal();
-    component.addAnexo(oversizedFile);
+    const modalComponent = openCreateModal(fixture);
+    modalComponent.addAnexo(oversizedFile);
     fixture.detectChanges();
 
-    expect(component.anexos()).toEqual([]);
-    expect(component.anexoError()).toContain('tamanho máximo permitido de 50 MB');
+    expect(modalComponent.anexos()).toEqual([]);
+    expect(modalComponent.anexoError()).toContain('tamanho máximo permitido de 50 MB');
     expect(
       (fixture.nativeElement as HTMLElement).querySelector('[role="alert"]')?.textContent,
     ).toContain('documento-muito-grande.pdf');
@@ -548,28 +652,28 @@ describe('LoteDetailPage', () => {
       type: 'application/pdf',
     } as File;
 
-    component.openCreateModal();
-    component.addAnexo(maximumSizeFile);
+    const modalComponent = openCreateModal(fixture);
+    modalComponent.addAnexo(maximumSizeFile);
     fixture.detectChanges();
 
-    expect(component.anexos().length).toBe(1);
-    expect(component.anexos()[0].descricao).toBe('comprovante.pdf');
-    expect(component.anexoError()).toBeNull();
+    expect(modalComponent.anexos().length).toBe(1);
+    expect(modalComponent.anexos()[0].descricao).toBe('comprovante.pdf');
+    expect(modalComponent.anexoError()).toBeNull();
     expect((fixture.nativeElement as HTMLElement).querySelector('#attachment-feedback')).toBeNull();
 
-    component.lancamentoForm.controls.contaCorrente.setValue('44444');
-    component.onContaInput();
-    component.searchContaCorrente();
-    component.lancamentoForm.patchValue({
+    modalComponent.lancamentoForm.controls.contaCorrente.setValue('44444');
+    modalComponent.onContaInput();
+    modalComponent.searchContaCorrente();
+    modalComponent.lancamentoForm.patchValue({
       valor: 100,
       historico: 'Lançamento Manual',
       documento: 'DOC-COM-ANEXO',
       pa: 'Cooperativa',
       complementoHistorico: 'Lançamento com comprovante',
     });
-    component.selectEvento(102);
-    component.confirmEventoSelection();
-    component.submitLancamento();
+    modalComponent.selectEvento(102);
+    modalComponent.confirmEventoSelection();
+    modalComponent.submitLancamento();
 
     expect(component.lancamentos().at(-1)?.anexos.length).toBe(1);
     expect(component.lancamentos().at(-1)?.anexos[0].descricao).toBe('comprovante.pdf');
@@ -579,20 +683,20 @@ describe('LoteDetailPage', () => {
     const fixture = await createComponent(3, 'alterar');
     const component = fixture.componentInstance;
 
-    component.openCreateModal();
-    component.addAnexo(
+    const modalComponent = openCreateModal(fixture);
+    modalComponent.addAnexo(
       new File(['document'], 'documento.docx', {
         type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       }),
     );
 
-    expect(component.anexos()).toEqual([]);
-    expect(component.anexoError()).toContain('Selecione PDF, PowerPoint ou imagem');
+    expect(modalComponent.anexos()).toEqual([]);
+    expect(modalComponent.anexoError()).toContain('Selecione PDF, PowerPoint ou imagem');
 
-    component.addAnexo(new File(['content'], 'imagem.png', { type: 'application/pdf' }));
+    modalComponent.addAnexo(new File(['content'], 'imagem.png', { type: 'application/pdf' }));
 
-    expect(component.anexos()).toEqual([]);
-    expect(component.anexoError()).toContain('não corresponde à extensão .png');
+    expect(modalComponent.anexos()).toEqual([]);
+    expect(modalComponent.anexoError()).toContain('não corresponde à extensão .png');
   });
 
   it('should show attachment metadata and preview images without distortion', async () => {
@@ -602,8 +706,8 @@ describe('LoteDetailPage', () => {
     const revokeObjectUrl = spyOn(URL, 'revokeObjectURL');
     const image = new File(['image-content'], 'comprovante.png', { type: 'image/png' });
 
-    component.openCreateModal();
-    component.addAnexo(image);
+    const modalComponent = openCreateModal(fixture);
+    modalComponent.addAnexo(image);
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
@@ -624,23 +728,23 @@ describe('LoteDetailPage', () => {
     expect(fileInput?.accept).toContain('.png');
     expect(fileInput?.accept).not.toContain('.docx');
 
-    component.viewSelectedAnexo();
+    modalComponent.viewSelectedAnexo();
     fixture.detectChanges();
 
     const previewImage = compiled.querySelector<HTMLImageElement>('.image-preview-stage img');
 
     expect(createObjectUrl).toHaveBeenCalledOnceWith(image);
-    expect(component.attachmentPreview()?.kind).toBe('image');
+    expect(modalComponent.attachmentPreview()?.kind).toBe('image');
     expect(previewImage?.alt).toBe('comprovante.png');
     expect(compiled.querySelector('.attachment-preview-modal')).not.toBeNull();
     expect(compiled.textContent).toContain('PNG · Imagem PNG');
     expect(compiled.textContent).toContain('13 B');
 
-    component.deleteSelectedAnexo();
+    modalComponent.deleteSelectedAnexo();
     fixture.detectChanges();
 
-    expect(component.previewAberto()).toBeFalse();
-    expect(component.anexos()).toEqual([]);
+    expect(modalComponent.previewAberto()).toBeFalse();
+    expect(modalComponent.anexos()).toEqual([]);
     expect(revokeObjectUrl).toHaveBeenCalledOnceWith('blob:image-preview');
   });
 
@@ -650,12 +754,14 @@ describe('LoteDetailPage', () => {
     spyOn(URL, 'createObjectURL').and.returnValue('blob:pdf-preview');
     const revokeObjectUrl = spyOn(URL, 'revokeObjectURL');
 
-    component.openCreateModal();
-    component.addAnexo(new File(['pdf-content'], 'relatorio.pdf', { type: 'application/pdf' }));
-    component.viewSelectedAnexo();
+    const modalComponent = openCreateModal(fixture);
+    modalComponent.addAnexo(
+      new File(['pdf-content'], 'relatorio.pdf', { type: 'application/pdf' }),
+    );
+    modalComponent.viewSelectedAnexo();
     fixture.detectChanges();
 
-    expect(component.attachmentPreview()?.viewer).toBe('pdf');
+    expect(modalComponent.attachmentPreview()?.viewer).toBe('pdf');
     expect((fixture.nativeElement as HTMLElement).querySelector('ngx-doc-viewer')).not.toBeNull();
 
     fixture.destroy();
@@ -668,13 +774,13 @@ describe('LoteDetailPage', () => {
     const component = fixture.componentInstance;
     spyOn(URL, 'createObjectURL').and.returnValue('blob:powerpoint-preview');
 
-    component.openCreateModal();
-    component.addAnexo(
+    const modalComponent = openCreateModal(fixture);
+    modalComponent.addAnexo(
       new File(['slides'], 'apresentacao.pptx', {
         type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
       }),
     );
-    component.viewSelectedAnexo();
+    modalComponent.viewSelectedAnexo();
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
@@ -682,7 +788,7 @@ describe('LoteDetailPage', () => {
       compiled.querySelectorAll<HTMLElement>('.attachment-preview-actions a'),
     ).map((action) => action.textContent?.trim());
 
-    expect(component.attachmentPreview()?.viewer).toBe('office');
+    expect(modalComponent.attachmentPreview()?.viewer).toBe('office');
     expect(compiled.textContent).toContain('Microsoft Office Online');
     expect(fallbackActions).toEqual(['Abrir arquivo', 'Baixar']);
   });
@@ -692,8 +798,8 @@ describe('LoteDetailPage', () => {
     const component = fixture.componentInstance;
     const compiled = fixture.nativeElement as HTMLElement;
 
-    component.openCreateModal();
-    component.lancamentoForm.patchValue({ valor: 0, documento: '' });
+    const modalComponent = openCreateModal(fixture);
+    modalComponent.lancamentoForm.patchValue({ valor: 0, documento: '' });
     fixture.detectChanges();
 
     const submitButton = compiled.querySelector<HTMLButtonElement>(
@@ -709,11 +815,11 @@ describe('LoteDetailPage', () => {
     fixture.detectChanges();
 
     expect(component.modalAberto()).toBeTrue();
-    expect(component.lancamentoForm.invalid).toBeTrue();
-    expect(component.lancamentoForm.controls.valor.touched).toBeTrue();
-    expect(component.lancamentoForm.controls.documento.touched).toBeTrue();
-    expect(component.lancamentoForm.controls.idEvento.touched).toBeTrue();
-    expect(component.lancamentoForm.controls.complementoHistorico.touched).toBeTrue();
+    expect(modalComponent.lancamentoForm.invalid).toBeTrue();
+    expect(modalComponent.lancamentoForm.controls.valor.touched).toBeTrue();
+    expect(modalComponent.lancamentoForm.controls.documento.touched).toBeTrue();
+    expect(modalComponent.lancamentoForm.controls.idEvento.touched).toBeTrue();
+    expect(modalComponent.lancamentoForm.controls.complementoHistorico.touched).toBeTrue();
     expect(compiled.textContent).toContain('O valor deve ser maior que zero.');
     expect(compiled.textContent).toContain('Informe o documento.');
     expect(compiled.textContent).toContain('Informe o evento.');

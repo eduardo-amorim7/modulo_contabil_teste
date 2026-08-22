@@ -222,7 +222,7 @@ export class LotesPage implements OnInit {
   requestDeletion(): void {
     const selectedLotes = this.getSelectedLotes();
 
-    if (selectedLotes.length > 0) {
+    if (selectedLotes.length === 1) {
       this.dialogLotes.set(selectedLotes);
       this.activeDialog.set('exclusao');
     }
@@ -294,11 +294,16 @@ export class LotesPage implements OnInit {
     const verb = multiple ? 'estão' : 'está';
     const situationLabel = multiple ? `${situation}s` : situation;
     const idsLabel = this.loteIdsFormatter.format(invalidIds.map(String));
-
-    this.showFeedback(
-      `Não foi possível ${action}: ${subject} ${idsLabel} já ${verb} ${situationLabel}.`,
-      'error',
+    const alreadyInTargetSituation = invalidIds.every(
+      (idLote) =>
+        this.lotesService.findById(idLote)?.situacaoLote.toLocaleLowerCase('pt-BR') === situation,
     );
+
+    const message = alreadyInTargetSituation
+      ? `Não foi possível ${action}: ${subject} ${idsLabel} já ${verb} ${situationLabel}.`
+      : `Não foi possível ${action}: ${subject} ${idsLabel} não ${verb} em uma situação permitida para essa ação.`;
+
+    this.showFeedback(message, 'error');
   }
 
   private showFeedback(message: string, tone: ActionFeedback['tone']): void {

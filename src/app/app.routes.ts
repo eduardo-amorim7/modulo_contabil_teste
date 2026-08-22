@@ -37,6 +37,10 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/lotes/pages/lotes-page/lotes-page').then(({ LotesPage }) => LotesPage),
       },
+      {
+        path: '**',
+        redirectTo: '',
+      },
     ],
   },
 ];

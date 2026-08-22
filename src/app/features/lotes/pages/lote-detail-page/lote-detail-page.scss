@@ -313,24 +313,6 @@ app-lote-detail-page {
     text-align: center !important;
   }
 
-  .selection-checkbox {
-    inline-size: 1rem;
-    block-size: 1rem;
-    margin: 0;
-    border-radius: 0.25rem;
-    accent-color: #008f8c;
-    cursor: pointer;
-  }
-
-  .selection-checkbox:focus-visible {
-    outline: 2px solid #0bb5ae;
-    outline-offset: 2px;
-  }
-
-  .selection-checkbox:disabled {
-    cursor: not-allowed;
-  }
-
   .empty-cell {
     block-size: 8.75rem;
     color: #65747a;
@@ -428,6 +410,10 @@ app-lote-detail-page {
     font-size: 0.75rem;
     font-weight: 700;
     text-align: end;
+  }
+
+  .lote-feedback--error {
+    color: #b42318;
   }
 
   .not-found-state {

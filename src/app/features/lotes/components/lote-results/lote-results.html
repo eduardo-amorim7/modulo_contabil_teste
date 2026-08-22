@@ -67,8 +67,10 @@
                 />
               </td>
               <td class="id-cell">{{ lote.idLote }}</td>
-              <td>{{ lote.dataEntrada }}</td>
-              <td class="numeric-cell value-cell">{{ currencyFormatter.format(lote.valor) }}</td>
+              <td>{{ lote.dataEntrada | ptBrDate }}</td>
+              <td class="numeric-cell value-cell">
+                {{ lote.valor | currency: 'BRL' : 'symbol' : '1.2-2' : 'pt-BR' }}
+              </td>
               <td class="numeric-cell">{{ lote.quantidadeLancamentos }}</td>
               <td>{{ lote.usuarioRegistro }}</td>
               <td>
@@ -79,7 +81,9 @@
                 }
               </td>
               <td>{{ lote.situacaoLote }}</td>
-              <td class="date-time-cell">{{ lote.dataHoraSituacaoLote }}</td>
+              <td class="date-time-cell">
+                {{ lote.dataHoraSituacaoLote | ptBrDate: 'dateTime' }}
+              </td>
             </tr>
           } @empty {
             <tr>

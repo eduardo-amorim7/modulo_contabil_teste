@@ -3,6 +3,7 @@
 @use 'styles/reset';
 @use 'styles/base';
 @use 'styles/compact-field';
+@use 'styles/table-checkbox';
 @use 'app/features/lotes/pages/lote-detail-page/lote-detail-page';
 
 @include mat.core();

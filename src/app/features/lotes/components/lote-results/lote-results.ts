@@ -1,13 +1,21 @@
+import { CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { Lote } from '../../models/lote.model';
+import { PtBrDatePipe } from '../../../../shared/pipes/pt-br-date.pipe';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatProgressBarModule, MatProgressSpinnerModule],
+  imports: [
+    CurrencyPipe,
+    MatButtonModule,
+    MatProgressBarModule,
+    MatProgressSpinnerModule,
+    PtBrDatePipe,
+  ],
   selector: 'app-lote-results',
   styleUrl: './lote-results.scss',
   templateUrl: './lote-results.html',
@@ -25,12 +33,6 @@ export class LoteResultsComponent {
   readonly pageChanged = output<number>();
   readonly retryRequested = output<void>();
   readonly selectionChanged = output<ReadonlySet<number>>();
-
-  readonly currencyFormatter = new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-    minimumFractionDigits: 2,
-  });
 
   isSelected(idLote: number): boolean {
     return this.selectedIds().has(idLote);
