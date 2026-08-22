@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { MatDatepickerIntl } from '@angular/material/datepicker';
 
 import { providePtBrDateAdapter } from '../../../../shared/date/pt-br-date-adapter';
 import { LoteFilters } from '../../models/lote-filters.model';
@@ -12,14 +13,14 @@ describe('LoteFiltersComponent', () => {
     }).compileComponents();
   });
 
-  it('should start with the reference institutions and all situations', () => {
+  it('should start with an empty institution filter and all situations', () => {
     const fixture = TestBed.createComponent(LoteFiltersComponent);
     fixture.detectChanges();
 
     expect(fixture.componentInstance.form.getRawValue()).toEqual(
       jasmine.objectContaining({
         instituicaoResponsavel: '0001 - SICOOB',
-        instituicao: '0002 - SICOOB CENTRAL',
+        instituicao: '',
         situacao: 'TODAS',
       }),
     );
@@ -34,6 +35,15 @@ describe('LoteFiltersComponent', () => {
     expect(responsibleInstitutionInput?.disabled).toBeTrue();
     expect(selectArrow).not.toBeNull();
     expect(selectArrow?.textContent?.trim()).toBe('');
+  });
+
+  it('should provide the datepicker help labels in Brazilian Portuguese', () => {
+    const datepickerIntl = TestBed.inject(MatDatepickerIntl);
+
+    expect(datepickerIntl.openCalendarLabel).toBe('Abrir calendário');
+    expect(datepickerIntl.prevMonthLabel).toBe('Mês anterior');
+    expect(datepickerIntl.nextMonthLabel).toBe('Próximo mês');
+    expect(datepickerIntl.switchToMultiYearViewLabel).toBe('Escolher mês e ano');
   });
 
   it('should reject an inverted lot id range', () => {
@@ -119,12 +129,12 @@ describe('LoteFiltersComponent', () => {
     ).toBeTrue();
   });
 
-  it('should validate the institution content and maximum length', () => {
+  it('should accept an empty institution and validate its maximum length', () => {
     const fixture = TestBed.createComponent(LoteFiltersComponent);
     const control = fixture.componentInstance.form.controls.instituicao;
 
     control.setValue('   ');
-    expect(control.hasError('required')).toBeTrue();
+    expect(control.valid).toBeTrue();
 
     control.setValue('A'.repeat(101));
     expect(control.hasError('maxlength')).toBeTrue();
@@ -190,7 +200,9 @@ describe('LoteFiltersComponent', () => {
 
     const errorMessage = compiled.querySelector('.range-error')?.textContent ?? '';
 
-    expect(fixture.componentInstance.form.controls.dataEntradaDe.hasError('matDatepickerParse')).toBeTrue();
+    expect(
+      fixture.componentInstance.form.controls.dataEntradaDe.hasError('matDatepickerParse'),
+    ).toBeTrue();
     expect(errorMessage).toContain('Informe uma data válida no formato dd/mm/aaaa.');
     expect(errorMessage).not.toContain('data inicial não pode ser maior');
   });

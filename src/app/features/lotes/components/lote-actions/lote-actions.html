@@ -1,15 +1,45 @@
 <nav class="actions-bar" aria-label="Ações dos lotes">
-  <button mat-stroked-button class="action-button" type="button">Confirmar</button>
-  <button mat-stroked-button class="action-button" type="button">Enviar</button>
-  <button mat-stroked-button class="action-button action-button--wide" type="button">
+  <button
+    mat-stroked-button
+    class="action-button"
+    type="button"
+    [disabled]="selectedCount() === 0"
+    (click)="approveRequested.emit()"
+  >
+    Confirmar
+  </button>
+  <button
+    mat-stroked-button
+    class="action-button"
+    type="button"
+    [disabled]="selectedCount() === 0"
+    (click)="sendRequested.emit()"
+  >
+    Enviar
+  </button>
+  <button
+    mat-stroked-button
+    class="action-button action-button--wide"
+    type="button"
+    [disabled]="selectedCount() === 0"
+    (click)="justificationRequested.emit()"
+  >
     Visualizar Justificativa
   </button>
-  <button mat-flat-button class="action-button action-button--primary" type="button">Incluir</button>
+  <button
+    mat-flat-button
+    class="action-button action-button--primary"
+    type="button"
+    (click)="includeRequested.emit()"
+  >
+    Incluir
+  </button>
   <button
     mat-stroked-button
     class="action-button"
     type="button"
     [disabled]="selectedCount() !== 1"
+    (click)="alterRequested.emit()"
   >
     Alterar
   </button>
@@ -17,7 +47,8 @@
     mat-stroked-button
     class="action-button"
     type="button"
-    [disabled]="selectedCount() !== 1"
+    [disabled]="selectedCount() === 0"
+    (click)="deleteRequested.emit()"
   >
     Excluir
   </button>
@@ -26,6 +57,7 @@
     class="action-button"
     type="button"
     [disabled]="selectedCount() !== 1"
+    (click)="viewRequested.emit()"
   >
     Visualizar
   </button>

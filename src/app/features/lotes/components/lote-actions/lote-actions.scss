@@ -9,8 +9,10 @@
   min-block-size: 2.5rem;
   padding: 0.1875rem;
   overflow-x: auto;
+  overscroll-behavior-inline: contain;
   border-radius: 0.25rem;
   background: linear-gradient(90deg, #f0f1f3 0%, #e9ebee 100%);
+  scroll-behavior: smooth;
 }
 
 .action-button {
@@ -41,4 +43,10 @@
   border-color: #c8cdd0;
   background: #f5f5f5;
   color: #98a1a5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .actions-bar {
+    scroll-behavior: auto;
+  }
 }

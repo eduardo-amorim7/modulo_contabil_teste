@@ -15,7 +15,7 @@ export interface LoteFilters {
 }
 
 export const INITIAL_LOTE_FILTERS: LoteFilters = {
-  instituicao: '0002 - SICOOB CENTRAL',
+  instituicao: '',
   situacao: 'TODAS',
   idLoteDe: null,
   idLoteAte: null,

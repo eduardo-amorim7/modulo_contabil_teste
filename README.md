@@ -55,15 +55,32 @@ npm start
 
 ## Comandos disponíveis
 
-| Comando | Finalidade |
-| --- | --- |
-| `npm start` | Inicia o servidor de desenvolvimento. |
-| `npm run build` | Gera o build de produção em `dist/`. |
-| `npm run watch` | Mantém o build de desenvolvimento em modo de observação. |
-| `npm test` | Executa os testes Jasmine/Karma em modo interativo. |
-| `npm run test:ci` | Executa os testes uma vez no Chrome Headless. |
+| Comando           | Finalidade                                               |
+| ----------------- | -------------------------------------------------------- |
+| `npm start`       | Inicia o servidor de desenvolvimento.                    |
+| `npm run build`   | Gera o build de produção em `dist/`.                     |
+| `npm run watch`   | Mantém o build de desenvolvimento em modo de observação. |
+| `npm test`        | Executa os testes Jasmine/Karma em modo interativo.      |
+| `npm run test:ci` | Executa os testes uma vez no Chrome Headless.            |
 
 ## Decisões técnicas adotadas
+
+### Significado da ação “Incluir”
+
+A ação **Incluir** respeita o contexto e a hierarquia **lote → lançamentos**:
+
+- **Na tela inicial de consulta**, **Incluir** inicia a criação de um **novo lote**. O usuário
+  informa os dados do lote e pode gravá-lo com ou sem lançamentos.
+- **Dentro da alteração de um lote**, **Incluir** atua sobre a seção de lançamentos e abre o
+  modal **Incluir Lançamento**, adicionando um novo lançamento ao lote atual. Essa ação não cria
+  outro lote.
+
+Essa interpretação foi adotada porque a tela inicial trabalha com a coleção de lotes, enquanto
+a tela de alteração já possui um lote como contexto. Assim, cada ação cria o tipo de registro
+correspondente ao nível em que o usuário se encontra e evita a abertura do modal de lançamento sem
+um lote de destino definido.
+
+### Arquitetura e implementação
 
 - **Arquitetura standalone:** componentes e configuração usam as APIs standalone do Angular, sem
   `NgModule`. O shell concentra a estrutura global e a página de lotes é carregada sob demanda

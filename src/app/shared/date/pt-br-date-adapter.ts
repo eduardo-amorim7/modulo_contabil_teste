@@ -6,6 +6,29 @@ import {
   MAT_NATIVE_DATE_FORMATS,
   NativeDateAdapter,
 } from '@angular/material/core';
+import { MatDatepickerIntl } from '@angular/material/datepicker';
+
+@Injectable()
+export class PtBrDatepickerIntl extends MatDatepickerIntl {
+  override calendarLabel = 'Calendário';
+  override openCalendarLabel = 'Abrir calendário';
+  override closeCalendarLabel = 'Fechar calendário';
+  override prevMonthLabel = 'Mês anterior';
+  override nextMonthLabel = 'Próximo mês';
+  override prevYearLabel = 'Ano anterior';
+  override nextYearLabel = 'Próximo ano';
+  override prevMultiYearLabel = '24 anos anteriores';
+  override nextMultiYearLabel = 'Próximos 24 anos';
+  override switchToMonthViewLabel = 'Escolher data';
+  override switchToMultiYearViewLabel = 'Escolher mês e ano';
+  override startDateLabel = 'Data inicial';
+  override endDateLabel = 'Data final';
+  override comparisonDateLabel = 'Intervalo de comparação';
+
+  override formatYearRangeLabel(start: string, end: string): string {
+    return `${start} a ${end}`;
+  }
+}
 
 @Injectable()
 export class PtBrDateAdapter extends NativeDateAdapter {
@@ -48,5 +71,6 @@ export function providePtBrDateAdapter(): Provider[] {
     { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },
     { provide: DateAdapter, useClass: PtBrDateAdapter },
     { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS },
+    { provide: MatDatepickerIntl, useClass: PtBrDatepickerIntl },
   ];
 }

@@ -6,16 +6,23 @@ import { LoteResultsComponent } from './lote-results';
 const ITEMS: readonly Lote[] = [
   {
     idLote: 3,
+    numeroLoteCco: 'CCO-2026-00003',
+    instituicao: '0002 - SICOOB CENTRAL',
+    eventoAnexoPorLote: false,
     dataEntrada: '28/04/2026',
     valor: 1250,
-    quantidadeLancamentos: 1,
+    quantidadeLancamentos: 0,
     usuarioRegistro: 'maria.silva',
     usuarioAprovacao: null,
     situacaoLote: 'Aberto',
     dataHoraSituacaoLote: '28/04/2026 09:14:22',
+    justificativa: 'Lorem ipsum dolor sit amet.',
   },
   {
     idLote: 4,
+    numeroLoteCco: 'CCO-2026-00004',
+    instituicao: '0004 - SICOOB COPERATIVA',
+    eventoAnexoPorLote: true,
     dataEntrada: '29/04/2026',
     valor: 875.5,
     quantidadeLancamentos: 2,
@@ -23,6 +30,7 @@ const ITEMS: readonly Lote[] = [
     usuarioAprovacao: 'renata.alves',
     situacaoLote: 'Confirmado',
     dataHoraSituacaoLote: '29/04/2026 10:32:15',
+    justificativa: 'Lorem ipsum dolor sit amet.',
   },
 ];
 

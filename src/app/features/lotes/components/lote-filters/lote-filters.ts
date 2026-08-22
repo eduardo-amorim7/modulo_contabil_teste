@@ -9,7 +9,6 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PtBrCurrencyDirective } from '../../../../shared/directives/pt-br-currency.directive';
 import {
   MAX_SAFE_CURRENCY_VALUE,
-  nonBlankValidator,
   nonNegativeSafeIntegerValidator,
 } from '../../../../shared/validators/input-value.validators';
 import { rangeOrderValidator } from '../../../../shared/validators/range-order.validator';
@@ -50,10 +49,10 @@ export class LoteFiltersComponent {
         value: INSTITUICAO_RESPONSAVEL,
         disabled: true,
       }),
-      instituicao: this.formBuilder.nonNullable.control(INITIAL_LOTE_FILTERS.instituicao, [
-        nonBlankValidator,
+      instituicao: this.formBuilder.nonNullable.control(
+        INITIAL_LOTE_FILTERS.instituicao,
         Validators.maxLength(100),
-      ]),
+      ),
       situacao: this.formBuilder.nonNullable.control<LoteSituacaoFiltro>(
         INITIAL_LOTE_FILTERS.situacao,
         Validators.required,

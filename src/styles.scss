@@ -2,6 +2,8 @@
 @use 'styles/tokens';
 @use 'styles/reset';
 @use 'styles/base';
+@use 'styles/compact-field';
+@use 'app/features/lotes/pages/lote-detail-page/lote-detail-page';
 
 @include mat.core();
 

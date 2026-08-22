@@ -138,6 +138,16 @@
   box-shadow: var(--shadow-shell);
 }
 
+@media (max-width: 64rem) {
+  .sidebar {
+    display: none;
+  }
+
+  .shell-content {
+    margin-inline-start: 0 !important;
+  }
+}
+
 @media (max-width: 40rem) {
   .topbar {
     padding-inline: 1rem;
@@ -145,5 +155,22 @@
 
   .content-surface {
     border-radius: 0.625rem;
+  }
+}
+
+@media (max-width: 30rem) {
+  .topbar {
+    padding-inline: 0.75rem;
+  }
+
+  .page-identity,
+  .breadcrumb {
+    min-inline-size: 0;
+  }
+
+  .breadcrumb span[aria-current='page'] {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }

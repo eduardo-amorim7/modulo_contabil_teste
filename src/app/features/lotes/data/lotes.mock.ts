@@ -1,6 +1,16 @@
 import { Lote } from '../models/lote.model';
 
-export const LOTES_MOCK: readonly Lote[] = [
+const INSTITUICOES_MOCK = ['0002 - SICOOB CENTRAL', '0004 - SICOOB COPERATIVA'] as const;
+
+const JUSTIFICATIVAS_MOCK = [
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.',
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.',
+] as const;
+
+const LOTES_BASE_MOCK: ReadonlyArray<
+  Omit<Lote, 'numeroLoteCco' | 'instituicao' | 'eventoAnexoPorLote' | 'justificativa'>
+> = [
   {
     idLote: 3,
     dataEntrada: '28/04/2026',
@@ -194,11 +204,19 @@ export const LOTES_MOCK: readonly Lote[] = [
   {
     idLote: 22,
     dataEntrada: '25/05/2026',
-    valor: 4750,
-    quantidadeLancamentos: 1,
+    valor: 0,
+    quantidadeLancamentos: 0,
     usuarioRegistro: 'daniela.moraes',
     usuarioAprovacao: 'renata.alves',
     situacaoLote: 'Confirmado',
     dataHoraSituacaoLote: '25/05/2026 12:36:20',
   },
 ];
+
+export const LOTES_MOCK: readonly Lote[] = LOTES_BASE_MOCK.map((lote, index) => ({
+  ...lote,
+  numeroLoteCco: `CCO-2026-${String(lote.idLote).padStart(5, '0')}`,
+  instituicao: INSTITUICOES_MOCK[index % INSTITUICOES_MOCK.length],
+  eventoAnexoPorLote: false,
+  justificativa: JUSTIFICATIVAS_MOCK[index % JUSTIFICATIVAS_MOCK.length],
+}));

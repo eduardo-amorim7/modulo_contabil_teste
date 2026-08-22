@@ -238,14 +238,10 @@
 
         @if (form.touched) {
           @if (form.controls.instituicao.invalid) {
-            <p class="range-error" role="alert">
-              Informe uma instituição válida com até 100 caracteres.
-            </p>
+            <p class="range-error" role="alert">A instituição deve ter no máximo 100 caracteres.</p>
           } @else if (form.controls.idLoteDe.invalid || form.controls.idLoteAte.invalid) {
             <p class="range-error" role="alert">Informe IDs inteiros e não negativos.</p>
-          } @else if (
-            form.controls.valorLoteDe.invalid || form.controls.valorLoteAte.invalid
-          ) {
+          } @else if (form.controls.valorLoteDe.invalid || form.controls.valorLoteAte.invalid) {
             <p class="range-error" role="alert">
               Informe valores monetários válidos e não negativos.
             </p>
@@ -253,9 +249,7 @@
             form.controls.dataEntradaDe.hasError('matDatepickerParse') ||
             form.controls.dataEntradaAte.hasError('matDatepickerParse')
           ) {
-            <p class="range-error" role="alert">
-              Informe uma data válida no formato dd/mm/aaaa.
-            </p>
+            <p class="range-error" role="alert">Informe uma data válida no formato dd/mm/aaaa.</p>
           } @else if (form.hasError('invalidDateRange')) {
             <p class="range-error" role="alert">
               A data inicial não pode ser maior que a data final.
