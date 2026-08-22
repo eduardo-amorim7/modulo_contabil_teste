@@ -12,158 +12,276 @@
       [attr.aria-label]="expanded() ? 'Recolher filtros' : 'Expandir filtros'"
       (click)="toggleExpanded()"
     >
-      <span class="material-symbols-outlined" aria-hidden="true">
-        {{ expanded() ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
-      </span>
+      <svg
+        class="collapse-button__icon"
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        focusable="false"
+        fill="none"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+      >
+        <path [attr.d]="expanded() ? 'm7 14 5-5 5 5' : 'm7 10 5 5 5-5'" />
+      </svg>
     </button>
   </header>
 
-  @if (expanded()) {
-    <form class="filters-form" [formGroup]="form" (ngSubmit)="submit()">
-      <div class="filters-grid">
-        <div class="identity-filters">
-          <div class="field-group">
-            <label for="instituicaoResponsavel">Instituição Resp.</label>
-            <mat-form-field class="compact-field" appearance="outline" subscriptSizing="dynamic">
-              <input
-                id="instituicaoResponsavel"
-                matInput
-                type="text"
-                formControlName="instituicaoResponsavel"
-              />
-            </mat-form-field>
-          </div>
+  <div
+    class="filters-card__content smooth-collapse"
+    [class.smooth-collapse--collapsed]="!expanded()"
+    [attr.aria-hidden]="expanded() ? null : 'true'"
+    [attr.inert]="expanded() ? null : ''"
+  >
+    <div class="filters-card__content-inner smooth-collapse__content">
+      <form class="filters-form" [formGroup]="form" (ngSubmit)="submit()">
+        <div class="filters-grid">
+          <div class="identity-filters">
+            <div class="field-group">
+              <label for="instituicaoResponsavel">Instituição Resp.</label>
+              <mat-form-field class="compact-field" appearance="outline" subscriptSizing="dynamic">
+                <input
+                  id="instituicaoResponsavel"
+                  matInput
+                  type="text"
+                  formControlName="instituicaoResponsavel"
+                />
+              </mat-form-field>
+            </div>
 
-          <div class="field-group">
-            <label for="instituicao">Instituição</label>
-            <mat-form-field class="compact-field" appearance="outline" subscriptSizing="dynamic">
-              <input id="instituicao" matInput type="text" formControlName="instituicao" />
-            </mat-form-field>
-          </div>
+            <div class="field-group">
+              <label for="instituicao">Instituição</label>
+              <mat-form-field class="compact-field" appearance="outline" subscriptSizing="dynamic">
+                <input
+                  id="instituicao"
+                  matInput
+                  type="text"
+                  maxlength="100"
+                  formControlName="instituicao"
+                />
+              </mat-form-field>
+            </div>
 
-          <div class="field-group">
-            <label for="situacao">Situação Lote</label>
-            <mat-form-field
-              class="compact-field select-field"
-              appearance="outline"
-              subscriptSizing="dynamic"
-            >
-              <mat-select id="situacao" formControlName="situacao">
-                @for (situacao of situacoes; track situacao) {
-                  <mat-option [value]="situacao">{{ situacao }}</mat-option>
-                }
-              </mat-select>
-              <span
-                matIconSuffix
-                class="material-symbols-outlined select-field__arrow"
-                aria-hidden="true"
+            <div class="field-group">
+              <label for="situacao">Situação Lote</label>
+              <mat-form-field
+                class="compact-field select-field"
+                appearance="outline"
+                subscriptSizing="dynamic"
               >
-                keyboard_arrow_down
-              </span>
-            </mat-form-field>
+                <mat-select
+                  id="situacao"
+                  formControlName="situacao"
+                  panelClass="situation-select-panel"
+                >
+                  @for (situacao of situacoes; track situacao) {
+                    <mat-option [value]="situacao">{{ situacao }}</mat-option>
+                  }
+                </mat-select>
+                <svg
+                  matIconSuffix
+                  class="select-field__arrow"
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  focusable="false"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                >
+                  <path d="m7 10 5 5 5-5" />
+                </svg>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="range-filters">
+            <div class="range-row">
+              <span class="range-row__title">ID Lote</span>
+
+              <div class="range-field">
+                <label for="idLoteDe">De</label>
+                <mat-form-field
+                  class="compact-field"
+                  appearance="outline"
+                  subscriptSizing="dynamic"
+                >
+                  <input
+                    id="idLoteDe"
+                    matInput
+                    type="number"
+                    min="0"
+                    step="1"
+                    formControlName="idLoteDe"
+                  />
+                </mat-form-field>
+              </div>
+
+              <div class="range-field">
+                <label for="idLoteAte">Até</label>
+                <mat-form-field
+                  class="compact-field"
+                  appearance="outline"
+                  subscriptSizing="dynamic"
+                >
+                  <input
+                    id="idLoteAte"
+                    matInput
+                    type="number"
+                    min="0"
+                    step="1"
+                    formControlName="idLoteAte"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="range-row">
+              <span class="range-row__title">Valor Lote</span>
+
+              <div class="range-field">
+                <label for="valorLoteDe">De</label>
+                <mat-form-field
+                  class="compact-field"
+                  appearance="outline"
+                  subscriptSizing="dynamic"
+                >
+                  <input
+                    id="valorLoteDe"
+                    matInput
+                    appPtBrCurrency
+                    type="text"
+                    maxlength="24"
+                    placeholder="R$ 0,00"
+                    formControlName="valorLoteDe"
+                  />
+                </mat-form-field>
+              </div>
+
+              <div class="range-field">
+                <label for="valorLoteAte">Até</label>
+                <mat-form-field
+                  class="compact-field"
+                  appearance="outline"
+                  subscriptSizing="dynamic"
+                >
+                  <input
+                    id="valorLoteAte"
+                    matInput
+                    appPtBrCurrency
+                    type="text"
+                    maxlength="24"
+                    placeholder="R$ 0,00"
+                    formControlName="valorLoteAte"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="range-row range-row--date">
+              <span class="range-row__title">Data Entrada</span>
+
+              <div class="range-field">
+                <label for="dataEntradaDe">De</label>
+                <mat-form-field
+                  class="compact-field"
+                  appearance="outline"
+                  subscriptSizing="dynamic"
+                >
+                  <input
+                    id="dataEntradaDe"
+                    matInput
+                    inputmode="numeric"
+                    maxlength="10"
+                    placeholder="dd/mm/aaaa"
+                    formControlName="dataEntradaDe"
+                    [matDatepicker]="dataEntradaDePicker"
+                  />
+                  <mat-datepicker-toggle
+                    matIconSuffix
+                    [for]="dataEntradaDePicker"
+                    aria-label="Abrir calendário da data inicial"
+                  />
+                  <mat-datepicker #dataEntradaDePicker />
+                </mat-form-field>
+              </div>
+
+              <div class="range-field">
+                <label for="dataEntradaAte">Até</label>
+                <mat-form-field
+                  class="compact-field"
+                  appearance="outline"
+                  subscriptSizing="dynamic"
+                >
+                  <input
+                    id="dataEntradaAte"
+                    matInput
+                    inputmode="numeric"
+                    maxlength="10"
+                    placeholder="dd/mm/aaaa"
+                    formControlName="dataEntradaAte"
+                    [matDatepicker]="dataEntradaAtePicker"
+                  />
+                  <mat-datepicker-toggle
+                    matIconSuffix
+                    [for]="dataEntradaAtePicker"
+                    aria-label="Abrir calendário da data final"
+                  />
+                  <mat-datepicker #dataEntradaAtePicker />
+                </mat-form-field>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="range-filters">
-          <div class="range-row">
-            <span class="range-row__title">ID Lote</span>
+        @if (form.touched) {
+          @if (form.controls.instituicao.invalid) {
+            <p class="range-error" role="alert">
+              Informe uma instituição válida com até 100 caracteres.
+            </p>
+          } @else if (form.controls.idLoteDe.invalid || form.controls.idLoteAte.invalid) {
+            <p class="range-error" role="alert">Informe IDs inteiros e não negativos.</p>
+          } @else if (
+            form.controls.valorLoteDe.invalid || form.controls.valorLoteAte.invalid
+          ) {
+            <p class="range-error" role="alert">
+              Informe valores monetários válidos e não negativos.
+            </p>
+          } @else if (
+            form.controls.dataEntradaDe.hasError('matDatepickerParse') ||
+            form.controls.dataEntradaAte.hasError('matDatepickerParse')
+          ) {
+            <p class="range-error" role="alert">
+              Informe uma data válida no formato dd/mm/aaaa.
+            </p>
+          } @else if (form.hasError('invalidDateRange')) {
+            <p class="range-error" role="alert">
+              A data inicial não pode ser maior que a data final.
+            </p>
+          } @else if (form.hasError('invalidIdRange')) {
+            <p class="range-error" role="alert">O ID inicial não pode ser maior que o final.</p>
+          } @else if (form.hasError('invalidValueRange')) {
+            <p class="range-error" role="alert">O valor inicial não pode ser maior que o final.</p>
+          }
+        }
 
-            <div class="range-field">
-              <label for="idLoteDe">De</label>
-              <mat-form-field class="compact-field" appearance="outline" subscriptSizing="dynamic">
-                <input id="idLoteDe" matInput type="number" min="0" formControlName="idLoteDe" />
-              </mat-form-field>
-            </div>
-
-            <div class="range-field">
-              <label for="idLoteAte">Até</label>
-              <mat-form-field class="compact-field" appearance="outline" subscriptSizing="dynamic">
-                <input id="idLoteAte" matInput type="number" min="0" formControlName="idLoteAte" />
-              </mat-form-field>
-            </div>
-          </div>
-
-          <div class="range-row">
-            <span class="range-row__title">Valor Lote</span>
-
-            <div class="range-field">
-              <label for="valorLoteDe">De</label>
-              <mat-form-field class="compact-field" appearance="outline" subscriptSizing="dynamic">
-                <input
-                  id="valorLoteDe"
-                  matInput
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  formControlName="valorLoteDe"
-                />
-              </mat-form-field>
-            </div>
-
-            <div class="range-field">
-              <label for="valorLoteAte">Até</label>
-              <mat-form-field class="compact-field" appearance="outline" subscriptSizing="dynamic">
-                <input
-                  id="valorLoteAte"
-                  matInput
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  formControlName="valorLoteAte"
-                />
-              </mat-form-field>
-            </div>
-          </div>
-
-          <div class="range-row range-row--date">
-            <span class="range-row__title">Data Entrada</span>
-
-            <div class="range-field">
-              <label for="dataEntradaDe">De</label>
-              <mat-form-field class="compact-field" appearance="outline" subscriptSizing="dynamic">
-                <input
-                  id="dataEntradaDe"
-                  matInput
-                  formControlName="dataEntradaDe"
-                  [matDatepicker]="dataEntradaDePicker"
-                />
-                <mat-datepicker-toggle
-                  matIconSuffix
-                  [for]="dataEntradaDePicker"
-                  aria-label="Abrir calendário da data inicial"
-                />
-                <mat-datepicker #dataEntradaDePicker />
-              </mat-form-field>
-            </div>
-
-            <div class="range-field">
-              <label for="dataEntradaAte">Até</label>
-              <mat-form-field class="compact-field" appearance="outline" subscriptSizing="dynamic">
-                <input
-                  id="dataEntradaAte"
-                  matInput
-                  formControlName="dataEntradaAte"
-                  [matDatepicker]="dataEntradaAtePicker"
-                />
-                <mat-datepicker-toggle
-                  matIconSuffix
-                  [for]="dataEntradaAtePicker"
-                  aria-label="Abrir calendário da data final"
-                />
-                <mat-datepicker #dataEntradaAtePicker />
-              </mat-form-field>
-            </div>
-          </div>
+        <div class="filters-actions">
+          <button
+            mat-flat-button
+            class="search-button"
+            type="submit"
+            [disabled]="loading()"
+            [attr.aria-busy]="loading()"
+          >
+            @if (loading()) {
+              <span class="search-button__spinner" aria-hidden="true"></span>
+            }
+            <span>{{ loading() ? 'Pesquisando...' : 'Pesquisar' }}</span>
+          </button>
         </div>
-      </div>
-
-      @if (form.invalid && form.touched) {
-        <p class="range-error" role="alert">O valor inicial não pode ser maior que o final.</p>
-      }
-
-      <div class="filters-actions">
-        <button mat-flat-button class="search-button" type="submit">Pesquisar</button>
-      </div>
-    </form>
-  }
+      </form>
+    </div>
+  </div>
 </section>

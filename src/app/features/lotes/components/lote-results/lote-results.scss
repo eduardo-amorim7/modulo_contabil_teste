@@ -1,0 +1,358 @@
+:host {
+  display: block;
+}
+
+.results-card {
+  position: relative;
+  min-block-size: 15rem;
+  overflow: hidden;
+  border: 1px solid #c9ced2;
+  border-radius: 0.375rem;
+  background: white;
+  box-shadow: 0 1px 2px rgb(38 52 59 / 8%);
+}
+
+.results-progress {
+  position: absolute;
+  z-index: 3;
+  inset: 0 0 auto;
+  --mat-progress-bar-active-indicator-color: #00a39d;
+  --mat-progress-bar-track-color: #cfeceb;
+}
+
+.results-summary {
+  grid-column: 3;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  justify-self: end;
+  gap: 0.75rem;
+  color: #5e6b70;
+  font-size: 0.6875rem;
+  white-space: nowrap;
+}
+
+.results-summary strong {
+  color: #153039;
+  font-weight: 700;
+}
+
+.results-summary__loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
+  color: #006d6b;
+  font-weight: 600;
+}
+
+.results-summary__loading mat-spinner {
+  --mat-progress-spinner-active-indicator-color: #008f8c;
+}
+
+.results-summary__selection {
+  padding-inline-start: 0.75rem;
+  border-inline-start: 1px solid #d5dcdf;
+  color: #007d79;
+  font-weight: 700;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  transition: opacity 150ms ease;
+}
+
+.table-scroll--loading {
+  opacity: 0.56;
+  pointer-events: none;
+}
+
+.results-table {
+  inline-size: 100%;
+  min-inline-size: 65rem;
+  border-collapse: collapse;
+  table-layout: fixed;
+  color: #23373f;
+  font-size: 0.6875rem;
+}
+
+.results-table th,
+.results-table td {
+  padding: 0.6875rem 0.75rem;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.results-table th {
+  block-size: 2.75rem;
+  border: 0;
+  background: #003f48;
+  color: white;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.results-table th:nth-child(2) {
+  inline-size: 4.5rem;
+}
+
+.results-table th:nth-child(3) {
+  inline-size: 6.75rem;
+}
+
+.results-table th:nth-child(4) {
+  inline-size: 7rem;
+}
+
+.results-table th:nth-child(5) {
+  inline-size: 8.5rem;
+}
+
+.results-table th:nth-child(6),
+.results-table th:nth-child(7) {
+  inline-size: 8.75rem;
+}
+
+.results-table th:nth-child(8) {
+  inline-size: 7rem;
+}
+
+.results-table th:nth-child(9) {
+  inline-size: 10.5rem;
+}
+
+.results-table tbody tr {
+  border-block-end: 1px solid #dce4e5;
+  background: #fff;
+  transition: background-color 120ms ease;
+}
+
+.results-table tbody tr:nth-child(even) {
+  background: #f9fbfb;
+}
+
+.results-table tbody tr:hover {
+  background: #e9fbf9;
+}
+
+.selection-cell {
+  inline-size: 3.25rem;
+  text-align: center !important;
+}
+
+.selection-checkbox {
+  inline-size: 1rem;
+  block-size: 1rem;
+  margin: 0;
+  border-radius: 0.25rem;
+  accent-color: #008f8c;
+  cursor: pointer;
+}
+
+.selection-checkbox:focus-visible {
+  outline: 2px solid #0bb5ae;
+  outline-offset: 2px;
+}
+
+.selection-checkbox:disabled {
+  cursor: not-allowed;
+}
+
+.numeric-cell {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.id-cell,
+.value-cell,
+.date-time-cell {
+  font-variant-numeric: tabular-nums;
+}
+
+.id-cell {
+  font-weight: 700;
+}
+
+.empty-value {
+  color: #899398;
+}
+
+.empty-cell {
+  block-size: 8.75rem;
+  color: #617177;
+  text-align: center !important;
+}
+
+.empty-cell strong,
+.empty-cell span:not(.empty-state__icon) {
+  display: block;
+}
+
+.empty-cell strong {
+  margin-block: 0.375rem 0.125rem;
+  color: #29424a;
+  font-size: 0.75rem;
+}
+
+.empty-state__icon {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  color: #199992;
+}
+
+.results-footer {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  min-block-size: 4.75rem;
+  padding: 0.75rem 1rem;
+  background: white;
+}
+
+.page-description {
+  color: #68767c;
+  font-size: 0.6875rem;
+}
+
+.pagination {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.pagination-button,
+.pagination-current {
+  display: grid;
+  place-items: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  border: 0;
+  border-radius: 50%;
+}
+
+.pagination-button {
+  background: #f1f3f3;
+  color: #547077;
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.pagination-button:hover:not(:disabled) {
+  background: #daf2f0;
+  color: #006f6b;
+}
+
+.pagination-button:focus-visible {
+  outline: 2px solid #008f8c;
+  outline-offset: 2px;
+}
+
+.pagination-button:disabled {
+  color: #aeb8bc;
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.pagination-button svg {
+  inline-size: 1rem;
+  block-size: 1rem;
+}
+
+.pagination-current {
+  background: #00948f;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.results-state {
+  display: flex;
+  align-items: center;
+  min-block-size: 10.5rem;
+  justify-content: center;
+  gap: 0.875rem;
+  padding: 1.5rem;
+}
+
+.results-state__icon {
+  display: grid;
+  place-items: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+}
+
+.results-state__icon svg {
+  inline-size: 1.375rem;
+}
+
+.results-state strong {
+  color: #612323;
+  font-size: 0.8125rem;
+}
+
+.results-state p {
+  margin: 0.1875rem 0 0;
+  color: #7d3a3a;
+  font-size: 0.75rem;
+}
+
+.results-state--error {
+  background: #fff8f7;
+}
+
+.results-state--error .results-state__icon {
+  background: #fde8e6;
+  color: #b4433d;
+}
+
+.retry-button {
+  margin-inline-start: 1rem;
+  border-color: #b75b55;
+  color: #8f312d;
+  font-family: var(--font-family-base);
+  font-size: 0.6875rem;
+  letter-spacing: 0;
+}
+
+@media (max-width: 48rem) {
+  .results-summary {
+    grid-column: 1;
+    justify-content: flex-end;
+    justify-self: end;
+  }
+
+  .results-footer {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 0.625rem;
+  }
+
+  .page-description,
+  .pagination {
+    grid-column: 1;
+  }
+
+  .results-state {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .retry-button {
+    margin-inline-start: 3.375rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .table-scroll,
+  .results-table tbody tr,
+  .pagination-button {
+    transition: none;
+  }
+}

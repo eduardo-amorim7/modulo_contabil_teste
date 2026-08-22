@@ -5,7 +5,28 @@
     Visualizar Justificativa
   </button>
   <button mat-flat-button class="action-button action-button--primary" type="button">Incluir</button>
-  <button mat-stroked-button class="action-button" type="button" disabled>Alterar</button>
-  <button mat-stroked-button class="action-button" type="button" disabled>Excluir</button>
-  <button mat-stroked-button class="action-button" type="button" disabled>Visualizar</button>
+  <button
+    mat-stroked-button
+    class="action-button"
+    type="button"
+    [disabled]="selectedCount() !== 1"
+  >
+    Alterar
+  </button>
+  <button
+    mat-stroked-button
+    class="action-button"
+    type="button"
+    [disabled]="selectedCount() !== 1"
+  >
+    Excluir
+  </button>
+  <button
+    mat-stroked-button
+    class="action-button"
+    type="button"
+    [disabled]="selectedCount() !== 1"
+  >
+    Visualizar
+  </button>
 </nav>

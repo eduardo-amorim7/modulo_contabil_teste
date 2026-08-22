@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
@@ -8,4 +8,6 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrl: './lote-actions.scss',
   templateUrl: './lote-actions.html',
 })
-export class LoteActionsComponent {}
+export class LoteActionsComponent {
+  readonly selectedCount = input(0);
+}

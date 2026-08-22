@@ -1,9 +1,9 @@
 export const LOTE_SITUACOES = ['TODAS', 'ABERTO', 'ENVIADO', 'CONFIRMADO'] as const;
+export const INSTITUICAO_RESPONSAVEL = '0001 - SICOOB';
 
 export type LoteSituacaoFiltro = (typeof LOTE_SITUACOES)[number];
 
 export interface LoteFilters {
-  instituicaoResponsavel: string;
   instituicao: string;
   situacao: LoteSituacaoFiltro;
   idLoteDe: number | null;
@@ -13,3 +13,14 @@ export interface LoteFilters {
   dataEntradaDe: Date | null;
   dataEntradaAte: Date | null;
 }
+
+export const INITIAL_LOTE_FILTERS: LoteFilters = {
+  instituicao: '0002 - SICOOB CENTRAL',
+  situacao: 'TODAS',
+  idLoteDe: null,
+  idLoteAte: null,
+  valorLoteDe: null,
+  valorLoteAte: null,
+  dataEntradaDe: null,
+  dataEntradaAte: null,
+};

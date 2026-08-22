@@ -18,6 +18,52 @@ body {
   font-family: var(--font-family-base);
 }
 
+.smooth-collapse {
+  display: grid;
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transition:
+    grid-template-rows 250ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 180ms ease-out;
+}
+
+.smooth-collapse--collapsed {
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    grid-template-rows 250ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 140ms ease-in,
+    visibility 0s linear 250ms;
+}
+
+.smooth-collapse__content {
+  min-block-size: 0;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smooth-collapse {
+    transition: none;
+  }
+}
+
 .select-field .mat-mdc-select-value {
   transform: translateY(-2px);
+}
+
+.situation-select-panel {
+  --mat-option-label-text-font: var(--font-family-base);
+  --mat-option-label-text-size: 0.8125rem;
+}
+
+.compact-field.mat-form-field-disabled,
+.compact-field.mat-form-field-disabled .mat-mdc-input-element {
+  cursor: not-allowed;
+}
+
+.compact-field.mat-form-field-disabled .mat-mdc-input-element {
+  color: #69757a;
+  -webkit-text-fill-color: #69757a;
+  opacity: 1;
 }

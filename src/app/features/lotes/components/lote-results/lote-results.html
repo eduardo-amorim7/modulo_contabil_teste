@@ -1,0 +1,181 @@
+<section class="results-card" aria-label="Resultados da pesquisa de lotes">
+  @if (loading()) {
+    <mat-progress-bar
+      class="results-progress"
+      mode="indeterminate"
+      aria-label="Consultando lotes"
+    />
+  }
+
+  @if (error()) {
+    <div class="results-state results-state--error" role="alert">
+      <span class="results-state__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 7v6M12 17h.01" />
+        </svg>
+      </span>
+      <div>
+        <strong>Não foi possível carregar os resultados</strong>
+        <p>{{ error() }}</p>
+      </div>
+      <button mat-stroked-button class="retry-button" type="button" (click)="retryRequested.emit()">
+        Tentar novamente
+      </button>
+    </div>
+  } @else {
+    <div class="table-scroll" [class.table-scroll--loading]="loading()" [attr.aria-busy]="loading()">
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th class="selection-cell" scope="col">
+              <input
+                class="selection-checkbox"
+                type="checkbox"
+                aria-label="Selecionar todos os lotes desta página"
+                [checked]="allVisibleSelected()"
+                [indeterminate]="someVisibleSelected()"
+                [disabled]="loading() || items().length === 0"
+                (change)="handleAllVisibleSelectionChange($event)"
+              />
+            </th>
+            <th scope="col">ID Lote</th>
+            <th scope="col">Data Entrada</th>
+            <th class="numeric-cell" scope="col">Valor</th>
+            <th class="numeric-cell" scope="col">Quant. Lançamentos</th>
+            <th scope="col">Usuário Registro</th>
+            <th scope="col">Usuário Aprovação</th>
+            <th scope="col">Situação Lote</th>
+            <th scope="col">Data/Hora Situação Lote</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (lote of items(); track lote.idLote) {
+            <tr>
+              <td class="selection-cell">
+                <input
+                  class="selection-checkbox"
+                  type="checkbox"
+                  [attr.aria-label]="'Selecionar lote ' + lote.idLote"
+                  [checked]="isSelected(lote.idLote)"
+                  [disabled]="loading()"
+                  (change)="handleLoteSelectionChange(lote.idLote, $event)"
+                />
+              </td>
+              <td class="id-cell">{{ lote.idLote }}</td>
+              <td>{{ lote.dataEntrada }}</td>
+              <td class="numeric-cell value-cell">{{ currencyFormatter.format(lote.valor) }}</td>
+              <td class="numeric-cell">{{ lote.quantidadeLancamentos }}</td>
+              <td>{{ lote.usuarioRegistro }}</td>
+              <td>
+                @if (lote.usuarioAprovacao) {
+                  {{ lote.usuarioAprovacao }}
+                } @else {
+                  <span class="empty-value" aria-label="Não informado">—</span>
+                }
+              </td>
+              <td>{{ lote.situacaoLote }}</td>
+              <td class="date-time-cell">{{ lote.dataHoraSituacaoLote }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td class="empty-cell" colspan="9">
+                @if (loading()) {
+                  Aguarde enquanto consultamos os lotes.
+                } @else {
+                  <span class="empty-state__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                      <circle cx="11" cy="11" r="6.5" />
+                      <path d="m16 16 4 4M8.5 9.5h5M8.5 12.5h3" />
+                    </svg>
+                  </span>
+                  <strong>Nenhum lote encontrado</strong>
+                  <span>Revise os filtros e faça uma nova pesquisa.</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <footer class="results-footer">
+      <span class="page-description">
+        Página {{ pageIndex() + 1 }} de {{ totalPages() }}
+      </span>
+
+      <nav class="pagination" aria-label="Paginação dos resultados">
+        <button
+          class="pagination-button"
+          type="button"
+          aria-label="Ir para a primeira página"
+          [disabled]="loading() || pageIndex() === 0"
+          (click)="goToPage(0)"
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m13 7-5 5 5 5M18 7l-5 5 5 5" />
+          </svg>
+        </button>
+        <button
+          class="pagination-button"
+          type="button"
+          aria-label="Ir para a página anterior"
+          [disabled]="loading() || pageIndex() === 0"
+          (click)="goToPage(pageIndex() - 1)"
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m15 7-5 5 5 5" />
+          </svg>
+        </button>
+
+        <span class="pagination-current" aria-current="page" [attr.aria-label]="'Página ' + (pageIndex() + 1)">
+          {{ pageIndex() + 1 }}
+        </span>
+
+        <button
+          class="pagination-button"
+          type="button"
+          aria-label="Ir para a próxima página"
+          [disabled]="loading() || pageIndex() >= totalPages() - 1"
+          (click)="goToPage(pageIndex() + 1)"
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 7 5 5-5 5" />
+          </svg>
+        </button>
+        <button
+          class="pagination-button"
+          type="button"
+          aria-label="Ir para a última página"
+          [disabled]="loading() || pageIndex() >= totalPages() - 1"
+          (click)="goToPage(totalPages() - 1)"
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m6 7 5 5-5 5M11 7l5 5-5 5" />
+          </svg>
+        </button>
+      </nav>
+
+      <div class="results-summary" aria-live="polite">
+        @if (searching() || (loading() && totalItems() === 0)) {
+          <span class="results-summary__loading">
+            <mat-spinner diameter="15" aria-hidden="true" />
+            Consultando lotes...
+          </span>
+        } @else {
+          <span>
+            <strong>{{ totalItems() }}</strong>
+            {{ totalItems() === 1 ? 'lote encontrado' : 'lotes encontrados' }}
+          </span>
+
+          @if (selectedIds().size > 0) {
+            <span class="results-summary__selection">
+              {{ selectedIds().size }}
+              {{ selectedIds().size === 1 ? 'selecionado' : 'selecionados' }}
+            </span>
+          }
+        }
+      </div>
+    </footer>
+  }
+</section>

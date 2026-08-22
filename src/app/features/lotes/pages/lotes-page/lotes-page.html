@@ -1,4 +1,17 @@
 <div class="lotes-page">
-  <app-lote-filters />
-  <app-lote-actions />
+  <app-lote-filters [loading]="searching()" (filtersSubmitted)="search($event)" />
+  <app-lote-actions [selectedCount]="selectedIds().size" />
+  <app-lote-results
+    [items]="items()"
+    [loading]="loading()"
+    [searching]="searching()"
+    [error]="error()"
+    [pageIndex]="pageIndex()"
+    [totalItems]="totalItems()"
+    [totalPages]="totalPages()"
+    [selectedIds]="selectedIds()"
+    (pageChanged)="changePage($event)"
+    (retryRequested)="retry()"
+    (selectionChanged)="updateSelection($event)"
+  />
 </div>
