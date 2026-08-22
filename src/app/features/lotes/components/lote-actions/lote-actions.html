@@ -47,7 +47,7 @@
     mat-stroked-button
     class="action-button"
     type="button"
-    [disabled]="selectedCount() === 0"
+    [disabled]="selectedCount() !== 1"
     (click)="deleteRequested.emit()"
   >
     Excluir

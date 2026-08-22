@@ -6,13 +6,7 @@ import { RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    MatButtonModule,
-    MatSidenavModule,
-    MatToolbarModule,
-    RouterLink,
-    RouterOutlet,
-  ],
+  imports: [MatButtonModule, MatSidenavModule, MatToolbarModule, RouterLink, RouterOutlet],
   selector: 'app-shell',
   styleUrl: './app-shell.scss',
   templateUrl: './app-shell.html',

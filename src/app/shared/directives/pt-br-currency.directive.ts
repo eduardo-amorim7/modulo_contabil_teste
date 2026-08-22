@@ -1,11 +1,4 @@
-import {
-  Directive,
-  ElementRef,
-  HostListener,
-  Renderer2,
-  forwardRef,
-  inject,
-} from '@angular/core';
+import { Directive, ElementRef, HostListener, Renderer2, forwardRef, inject } from '@angular/core';
 import {
   AbstractControl,
   ControlValueAccessor,
@@ -114,7 +107,10 @@ export class PtBrCurrencyDirective implements ControlValueAccessor, Validator {
   }
 
   private parseCurrency(rawValue: string): number | null {
-    const sanitized = rawValue.trim().replace(/^R\$\s*/i, '').replace(/\s/g, '');
+    const sanitized = rawValue
+      .trim()
+      .replace(/^R\$\s*/i, '')
+      .replace(/\s/g, '');
 
     if (!sanitized) {
       return null;

@@ -1,9 +1,10 @@
 # Módulo Contábil — Outros Créditos e Débitos
 
-SPA para consulta e gestão de lotes de outros créditos e débitos. A versão atual entrega o shell
-da aplicação, filtros de consulta, tabela paginada, seleção de lotes e os estados de carregamento,
-resultado vazio e erro. Os dados ainda são fornecidos por um serviço mock local; não há integração
-com backend nesta etapa.
+SPA para consulta e gestão de lotes de outros créditos e débitos. A aplicação entrega filtros de
+consulta, tabela paginada, seleção e ações sobre lotes, fluxos de inclusão, alteração e visualização,
+além da gestão de lançamentos em modal com validações reativas e anexos. Estados de carregamento,
+resultado vazio e erro também são tratados. Os dados são fornecidos por um serviço mock local; não
+há integração com backend nesta etapa.
 
 ## Stack e versões
 
@@ -94,7 +95,8 @@ um lote de destino definido.
 - **Formulários reativos e validação:** os filtros usam Reactive Forms tipados, validações de
   campos obrigatórios, limites numéricos e consistência dos intervalos de lote, valor e data.
 - **Experiência brasileira:** valores monetários são tratados em BRL por um `ControlValueAccessor`
-  próprio, e datas digitadas seguem estritamente `dd/MM/yyyy` com locale `pt-BR`.
+  próprio e exibidos com `Intl.NumberFormat`. Datas digitadas seguem estritamente `dd/MM/yyyy` com
+  adapter e locale `pt-BR`.
 - **Fluxo assíncrono com RxJS:** as pesquisas têm debounce de 350 ms, cancelamento da solicitação
   anterior com `switchMap` e encerramento automático das inscrições com `takeUntilDestroyed`.
 - **Camada de dados substituível:** `LotesService` encapsula filtragem, latência simulada, paginação
@@ -107,7 +109,9 @@ um lote de destino definido.
 - **Estilos com tokens:** cores, tipografia, espaçamentos, dimensões e breakpoints são centralizados
   em variáveis SCSS/CSS, com layout responsivo e estilos encapsulados por componente.
 - **Qualidade e segurança de tipos:** TypeScript, injeção e templates estão em modo estrito. Os
-  testes unitários usam Jasmine/Karma, incluindo execução headless para integração contínua.
+  testes unitários usam Jasmine/Karma, incluindo execução headless para integração contínua. Na
+  revisão final da entrega, os 94 testes foram executados com sucesso, assim como o build de
+  produção.
 
 ## Estrutura principal
 

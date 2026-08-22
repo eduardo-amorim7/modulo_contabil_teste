@@ -24,7 +24,11 @@
       </button>
     </div>
   } @else {
-    <div class="table-scroll" [class.table-scroll--loading]="loading()" [attr.aria-busy]="loading()">
+    <div
+      class="table-scroll"
+      [class.table-scroll--loading]="loading()"
+      [attr.aria-busy]="loading()"
+    >
       <table class="results-table">
         <thead>
           <tr>
@@ -100,9 +104,7 @@
     </div>
 
     <footer class="results-footer">
-      <span class="page-description">
-        Página {{ pageIndex() + 1 }} de {{ totalPages() }}
-      </span>
+      <span class="page-description"> Página {{ pageIndex() + 1 }} de {{ totalPages() }} </span>
 
       <nav class="pagination" aria-label="Paginação dos resultados">
         <button
@@ -112,7 +114,13 @@
           [disabled]="loading() || pageIndex() === 0"
           (click)="goToPage(0)"
         >
-          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
             <path d="m13 7-5 5 5 5M18 7l-5 5 5 5" />
           </svg>
         </button>
@@ -123,12 +131,22 @@
           [disabled]="loading() || pageIndex() === 0"
           (click)="goToPage(pageIndex() - 1)"
         >
-          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
             <path d="m15 7-5 5 5 5" />
           </svg>
         </button>
 
-        <span class="pagination-current" aria-current="page" [attr.aria-label]="'Página ' + (pageIndex() + 1)">
+        <span
+          class="pagination-current"
+          aria-current="page"
+          [attr.aria-label]="'Página ' + (pageIndex() + 1)"
+        >
           {{ pageIndex() + 1 }}
         </span>
 
@@ -139,7 +157,13 @@
           [disabled]="loading() || pageIndex() >= totalPages() - 1"
           (click)="goToPage(pageIndex() + 1)"
         >
-          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
             <path d="m9 7 5 5-5 5" />
           </svg>
         </button>
@@ -150,7 +174,13 @@
           [disabled]="loading() || pageIndex() >= totalPages() - 1"
           (click)="goToPage(totalPages() - 1)"
         >
-          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
             <path d="m6 7 5 5-5 5M11 7l5 5-5 5" />
           </svg>
         </button>

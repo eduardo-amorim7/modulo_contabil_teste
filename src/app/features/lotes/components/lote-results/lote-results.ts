@@ -88,7 +88,12 @@ export class LoteResultsComponent {
   }
 
   goToPage(pageIndex: number): void {
-    if (this.loading() || pageIndex < 0 || pageIndex >= this.totalPages() || pageIndex === this.pageIndex()) {
+    if (
+      this.loading() ||
+      pageIndex < 0 ||
+      pageIndex >= this.totalPages() ||
+      pageIndex === this.pageIndex()
+    ) {
       return;
     }
 
