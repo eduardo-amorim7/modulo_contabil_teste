@@ -42,6 +42,12 @@ describe('LancamentoModalComponent', () => {
     fixture.detectChanges();
 
     const component = fixture.componentInstance;
+    const eventSearchButton = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(
+      '.event-search button',
+    );
+
+    expect(eventSearchButton?.disabled).toBeFalse();
+
     component.lancamentoForm.patchValue({
       valor: 75.5,
       historico: 'Lançamento Manual',

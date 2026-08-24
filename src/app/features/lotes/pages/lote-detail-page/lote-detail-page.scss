@@ -787,7 +787,7 @@ app-lote-detail-page {
     border: 0;
     border-radius: 0.3125rem;
     background: transparent;
-    color: var(--color-primary);
+    color: #008b89;
     cursor: pointer;
   }
 
@@ -1669,6 +1669,15 @@ app-lote-detail-page {
     .event-lookup-line {
       align-items: stretch;
       flex-direction: column;
+    }
+
+    .event-search {
+      inline-size: 100%;
+      flex: 0 0 auto;
+    }
+
+    .event-search button:not(:disabled) {
+      color: #008b89;
     }
 
     .event-search-filters {
